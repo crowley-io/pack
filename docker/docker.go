@@ -15,6 +15,8 @@ type Docker interface {
 	// Run create and start a container to execute a runnable.
 	// Return the exit code of the container status, an error otherwise.
 	Run(option RunOptions) (int, error)
+	// Build create a new image from a Dockerfile.
+	Build(option BuildOptions) error
 }
 
 // The default implementation of the Docker interface.
