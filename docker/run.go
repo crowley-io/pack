@@ -8,7 +8,7 @@ import (
 	api "github.com/fsouza/go-dockerclient"
 )
 
-// Container options
+// Run options
 const (
 	containerName   = ""
 	useTTy          = false
