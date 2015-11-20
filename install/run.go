@@ -22,10 +22,6 @@ var (
 // Install run compile instructions with a Docker container.
 func Install(client docker.Docker, configuration *configuration.Configuration) error {
 
-	if configuration == nil {
-		return ErrConfigurationEmpty
-	}
-
 	if err := validateConfiguration(configuration); err != nil {
 		return err
 	}
@@ -66,6 +62,10 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 }
 
 func validateConfiguration(c *configuration.Configuration) error {
+
+	if c == nil {
+		return ErrConfigurationEmpty
+	}
 
 	if c.Output == "" {
 		return ErrOutputRequired
