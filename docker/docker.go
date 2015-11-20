@@ -6,12 +6,29 @@ import (
 )
 
 // Docker wrap underlaying docker client to expose only required functions.
-type Docker struct {
+type Docker interface {
+	// Ping pings the docker server
+	Ping() error
+	// Logs attach a stream on a running container to read stdout and stderr
+	// output from docker logs.
+	Logs(id string, stream LogStream) error
+	// Run create and start a container to execute a runnable.
+	// Return the exit code of the container status, an error otherwise.
+	Run(option RunOptions) (int, error)
+}
+
+// The default implementation of the Docker interface.
+type docker struct {
 	client *api.Client
 }
 
+// See Docker interface
+func (d docker) Ping() error {
+	return d.client.Ping()
+}
+
 // New return a Docker client
-func New(configuration configuration.Configuration) (*Docker, error) {
+func New(configuration *configuration.Configuration) (Docker, error) {
 
 	c, err := api.NewClient(configuration.DockerEndpoint)
 
@@ -19,7 +36,7 @@ func New(configuration configuration.Configuration) (*Docker, error) {
 		return nil, err
 	}
 
-	d := &Docker{}
+	d := &docker{}
 	d.client = c
 
 	if err = d.Ping(); err != nil {
@@ -27,9 +44,5 @@ func New(configuration configuration.Configuration) (*Docker, error) {
 	}
 
 	return d, nil
-}
 
-// Ping pings the docker server
-func (d Docker) Ping() error {
-	return d.client.Ping()
 }

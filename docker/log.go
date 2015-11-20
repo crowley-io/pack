@@ -12,8 +12,8 @@ type LogStream struct {
 	Err io.Writer
 }
 
-// Logs attach a stream on a running container to read stdout and stderr output.
-func (d Docker) Logs(id string, stream LogStream) error {
+// See Docker interface
+func (d docker) Logs(id string, stream LogStream) error {
 	return d.client.Logs(logsOptions(id, stream))
 }
 

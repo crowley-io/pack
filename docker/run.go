@@ -28,9 +28,8 @@ type RunOptions struct {
 	Volumes []string
 }
 
-// Run create and start a container to execute a runnable.
-// Return the exit code of the container status.
-func (d Docker) Run(option RunOptions) (int, error) {
+// See Docker interface
+func (d docker) Run(option RunOptions) (int, error) {
 
 	e, err := d.client.CreateContainer(createContainerOptions(option))
 
