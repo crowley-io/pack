@@ -17,6 +17,17 @@ func exit(err error, exit int) {
 	}
 }
 
+func run(dck docker.Docker, cnf *configuration.Configuration) error {
+
+	if err := install.Install(dck, cnf); err != nil {
+		return err
+	}
+
+	// TODO run pack build step.
+
+	return nil
+}
+
 func main() {
 
 	app := cli.App("crowley-pack", "Docker build system.")
@@ -31,11 +42,9 @@ func main() {
 		d, err := docker.New(c)
 		exit(err, 254)
 
-		if err = install.Install(d, c); err != nil {
-			exit(err, 1)
+		if err = run(d, c); err != nil {
+			exit(err, 255)
 		}
-
-		// TODO run pack build step.
 
 	}
 
