@@ -10,6 +10,13 @@ import (
 	cli "github.com/jawher/mow.cli"
 )
 
+func exit(err error, exit int) {
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(exit)
+	}
+}
+
 func main() {
 
 	app := cli.App("crowley-pack", "Docker build system.")
@@ -19,23 +26,13 @@ func main() {
 	app.Action = func() {
 
 		c, err := configuration.Parse(*path)
-
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(255)
-			return
-		}
+		exit(err, 253)
 
 		d, err := docker.New(c)
-
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(255)
-			return
-		}
+		exit(err, 254)
 
 		if err = install.Install(d, c); err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			exit(err, 1)
 		}
 
 		// TODO run pack build step.
