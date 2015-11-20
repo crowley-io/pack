@@ -15,10 +15,16 @@ var (
 	ErrPathRequired = errors.New("configuration: path is required")
 	// ErrImageRequired is returned when path isn't defined in the configuration.
 	ErrImageRequired = errors.New("configuration: image is required")
+	// ErrConfigurationEmpty is returned when Install is called with an empty configuration.
+	ErrConfigurationEmpty = errors.New("configuration is required")
 )
 
 // Install run compile instructions with a Docker container.
-func Install(client *docker.Docker, configuration *configuration.Configuration) error {
+func Install(client docker.Docker, configuration *configuration.Configuration) error {
+
+	if configuration == nil {
+		return ErrConfigurationEmpty
+	}
 
 	if err := validateConfiguration(configuration); err != nil {
 		return err

@@ -26,7 +26,7 @@ func main() {
 			return
 		}
 
-		d, err := docker.New(*c)
+		d, err := docker.New(c)
 
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
