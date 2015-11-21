@@ -2,7 +2,6 @@ package install
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"testing"
 
@@ -34,7 +33,7 @@ func TestHome(t *testing.T) {
 	h := home()
 
 	assert.NotEmpty(t, h)
-	assert.True(t, checkPathExist(h), "home path doesn't exist")
+	assert.True(t, pathExist(h), "home path doesn't exist")
 
 }
 
@@ -43,7 +42,7 @@ func TestPwd(t *testing.T) {
 	p := pwd()
 
 	assert.NotEmpty(t, p)
-	assert.True(t, checkPathExist(p), "pwd path doesn't exist")
+	assert.True(t, pathExist(p), "pwd path doesn't exist")
 
 }
 
@@ -72,11 +71,4 @@ func TestGetEnv(t *testing.T) {
 	assert.Contains(t, e, fmt.Sprintf("CROWLEY_PACK_DIRECTORY=%s", p))
 	assert.Contains(t, e, fmt.Sprintf("CROWLEY_PACK_OUTPUT=%s/%s", p, o))
 
-}
-
-func checkPathExist(p string) bool {
-	if _, err := os.Stat(p); os.IsNotExist(err) {
-		return false
-	}
-	return true
 }

@@ -3,6 +3,7 @@ package install
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/crowley-io/pack/configuration"
 	"github.com/crowley-io/pack/docker"
@@ -38,6 +39,7 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 		return err
 	}
 
+	output := configuration.Output
 	image := configuration.Install.Image
 	command := configuration.Install.Command
 
@@ -56,6 +58,10 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 
 	if exit != 0 {
 		return fmt.Errorf("cannot run install: exit status %d", exit)
+	}
+
+	if !pathExist(output) {
+		return fmt.Errorf("file not found: %s", output)
 	}
 
 	return nil
@@ -80,4 +86,11 @@ func validateConfiguration(c *configuration.Configuration) error {
 	}
 
 	return nil
+}
+
+func pathExist(p string) bool {
+	if _, err := os.Stat(p); err != nil {
+		return false
+	}
+	return true
 }

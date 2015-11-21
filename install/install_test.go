@@ -72,9 +72,13 @@ func (m *DockerMock) Logs(id string, stream docker.LogStream) error {
 	return nil
 }
 
+func (m *DockerMock) Build(option docker.BuildOptions) error {
+	return nil
+}
+
 func TestInstall(t *testing.T) {
 
-	c, o := dockerMockConf()
+	c, o := dockerMockConf("../testing/app.bin")
 
 	d := &DockerMock{}
 	d.On("Run", o).Return(0, nil)
@@ -88,7 +92,7 @@ func TestInstall(t *testing.T) {
 
 func TestInstallOnError(t *testing.T) {
 
-	c, o := dockerMockConf()
+	c, o := dockerMockConf("../testing/app.bin")
 
 	d := &DockerMock{}
 	d.On("Run", o).Return(255, nil)
@@ -102,7 +106,7 @@ func TestInstallOnError(t *testing.T) {
 
 func TestInstallWithDockerError(t *testing.T) {
 
-	c, o := dockerMockConf()
+	c, o := dockerMockConf("../testing/app.bin")
 
 	d := &DockerMock{}
 	e := errors.New("an error")
@@ -137,13 +141,27 @@ func TestInstallWithNilConfiguration(t *testing.T) {
 	d.AssertExpectations(t)
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrConfigurationEmpty, err)
-	
+
 }
 
-func dockerMockConf() (*configuration.Configuration, docker.RunOptions) {
+func TestInstallWithNoOutput(t *testing.T) {
+
+	c, o := dockerMockConf("file.txt")
+
+	d := &DockerMock{}
+	d.On("Run", o).Return(0, nil)
+
+	err := Install(d, c)
+
+	d.AssertExpectations(t)
+	assert.NotNil(t, err)
+
+}
+
+func dockerMockConf(output string) (*configuration.Configuration, docker.RunOptions) {
 
 	c := &configuration.Configuration{
-		Output: "file",
+		Output: output,
 		Install: configuration.Install{
 			Command: "make",
 			Path:    "/root",
