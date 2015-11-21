@@ -20,6 +20,6 @@ type Install struct {
 // Compose contains pack runtime's configuration.
 type Compose struct {
 	Name    string
-	NoCache bool
+	NoCache bool `yaml:"no-cache"`
 	Pull    bool
 }
