@@ -11,11 +11,11 @@ import (
 
 var (
 	// ErrOutputRequired is returned when output isn't defined in the configuration.
-	ErrOutputRequired = errors.New("configuration: output is required")
+	ErrOutputRequired = errors.New("configuration(install): output is required")
 	// ErrPathRequired is returned when path isn't defined in the configuration.
-	ErrPathRequired = errors.New("configuration: path is required")
+	ErrPathRequired = errors.New("configuration(install): path is required")
 	// ErrImageRequired is returned when path isn't defined in the configuration.
-	ErrImageRequired = errors.New("configuration: image is required")
+	ErrImageRequired = errors.New("configuration(install): image is required")
 	// ErrConfigurationEmpty is returned when Install is called with an empty configuration.
 	ErrConfigurationEmpty = errors.New("configuration is required")
 )
@@ -23,7 +23,7 @@ var (
 // Install run compile instructions with a Docker container.
 func Install(client docker.Docker, configuration *configuration.Configuration) error {
 
-	if err := validateConfiguration(configuration); err != nil {
+	if err := ValidateConfiguration(configuration); err != nil {
 		return err
 	}
 
@@ -67,7 +67,8 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 	return nil
 }
 
-func validateConfiguration(c *configuration.Configuration) error {
+// ValidateConfiguration return an error if the given Configuration has flaw.
+func ValidateConfiguration(c *configuration.Configuration) error {
 
 	if c == nil {
 		return ErrConfigurationEmpty
