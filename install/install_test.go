@@ -10,51 +10,6 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func TestValidateConfigurationEmptyOutput(t *testing.T) {
-
-	c := &configuration.Configuration{
-		Install: configuration.Install{
-			Path:  "/root",
-			Image: "debian",
-		},
-	}
-	err := ValidateConfiguration(c)
-
-	assert.NotNil(t, err)
-	assert.Equal(t, ErrOutputRequired, err)
-
-}
-
-func TestValidateConfigurationEmptyImage(t *testing.T) {
-
-	c := &configuration.Configuration{
-		Output: "file",
-		Install: configuration.Install{
-			Path: "/root",
-		},
-	}
-	err := ValidateConfiguration(c)
-
-	assert.NotNil(t, err)
-	assert.Equal(t, ErrImageRequired, err)
-
-}
-
-func TestValidateConfigurationEmptyPath(t *testing.T) {
-
-	c := &configuration.Configuration{
-		Output: "file",
-		Install: configuration.Install{
-			Image: "debian",
-		},
-	}
-	err := ValidateConfiguration(c)
-
-	assert.NotNil(t, err)
-	assert.Equal(t, ErrPathRequired, err)
-
-}
-
 type DockerMock struct {
 	mock.Mock
 }
@@ -140,7 +95,7 @@ func TestInstallWithNilConfiguration(t *testing.T) {
 
 	d.AssertExpectations(t)
 	assert.NotNil(t, err)
-	assert.Equal(t, ErrConfigurationEmpty, err)
+	assert.Equal(t, configuration.ErrConfigurationEmpty, err)
 
 }
 
@@ -166,6 +121,9 @@ func dockerMockConf(output string) (*configuration.Configuration, docker.RunOpti
 			Command: "make",
 			Path:    "/root",
 			Image:   "debian",
+		},
+		Compose: configuration.Compose{
+			Name: "debian",
 		},
 	}
 
