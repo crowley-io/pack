@@ -18,7 +18,7 @@ func TestValidateConfigurationEmptyOutput(t *testing.T) {
 			Image: "debian",
 		},
 	}
-	err := validateConfiguration(c)
+	err := ValidateConfiguration(c)
 
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrOutputRequired, err)
@@ -33,7 +33,7 @@ func TestValidateConfigurationEmptyImage(t *testing.T) {
 			Path: "/root",
 		},
 	}
-	err := validateConfiguration(c)
+	err := ValidateConfiguration(c)
 
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrImageRequired, err)
@@ -48,7 +48,7 @@ func TestValidateConfigurationEmptyPath(t *testing.T) {
 			Image: "debian",
 		},
 	}
-	err := validateConfiguration(c)
+	err := ValidateConfiguration(c)
 
 	assert.NotNil(t, err)
 	assert.Equal(t, ErrPathRequired, err)
