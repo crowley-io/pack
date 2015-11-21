@@ -6,11 +6,6 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const (
-	// DefaultDockerEndpoint define the default docker endpoint used in Configuration
-	DefaultDockerEndpoint = "unix:///var/run/docker.sock"
-)
-
 // Parse a file path and inflate a new Configuration
 func Parse(path string) (*Configuration, error) {
 
@@ -21,22 +16,13 @@ func Parse(path string) (*Configuration, error) {
 		return nil, err
 	}
 
-	err = yaml.Unmarshal(b, c)
-
-	if err != nil {
+	if err = yaml.Unmarshal(b, c); err != nil {
 		return nil, err
 	}
 
-	validate(c)
-
-	return c, nil
-}
-
-func validate(c *Configuration) bool {
-
-	if c.DockerEndpoint == "" {
-		c.DockerEndpoint = DefaultDockerEndpoint
+	if err = Validate(c); err != nil {
+		return nil, err
 	}
 
-	return true
+	return c, nil
 }
