@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/crowley-io/pack/compose"
 	"github.com/crowley-io/pack/configuration"
 	"github.com/crowley-io/pack/docker"
 	"github.com/crowley-io/pack/install"
@@ -23,7 +24,9 @@ func run(dck docker.Docker, cnf *configuration.Configuration) error {
 		return err
 	}
 
-	// TODO run pack build step.
+	if err := compose.Compose(dck, cnf); err != nil {
+		return err
+	}
 
 	return nil
 }
