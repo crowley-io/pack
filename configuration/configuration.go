@@ -19,5 +19,7 @@ type Install struct {
 
 // Compose contains pack runtime's configuration.
 type Compose struct {
-	Name string
+	Name    string
+	NoCache bool
+	Pull    bool
 }
