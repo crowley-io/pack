@@ -52,5 +52,5 @@ func testConfArgs(t *testing.T, c *Configuration) {
 	assert.Equal(t, "app.tar.gz", c.Output)
 	assert.Equal(t, "packer-go", c.Install.Image)
 	assert.Equal(t, "/usr/local/go", c.Install.Path)
-	assert.Equal(t, "shen", c.Pack.Name)
+	assert.Equal(t, "shen", c.Compose.Name)
 }

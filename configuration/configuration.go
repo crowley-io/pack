@@ -5,7 +5,7 @@ type Configuration struct {
 	DockerEndpoint string
 	Output         string
 	Install        Install
-	Pack           Pack
+	Compose        Compose
 }
 
 // Install contains install runtime's configuration.
@@ -17,7 +17,7 @@ type Install struct {
 	Volumes     []string
 }
 
-// Pack contains pack runtime's configuration.
-type Pack struct {
+// Compose contains pack runtime's configuration.
+type Compose struct {
 	Name string
 }
