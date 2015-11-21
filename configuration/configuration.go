@@ -23,3 +23,9 @@ type Compose struct {
 	NoCache bool `yaml:"no-cache"`
 	Pull    bool
 }
+
+// Validate is just a wrapper for the static function with the same name.
+// Which mean that it will return an error if the given Configuration has flaw.
+func (c *Configuration) Validate() error {
+	return Validate(c)
+}
