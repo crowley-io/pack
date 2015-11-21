@@ -1,7 +1,6 @@
 package install
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -9,32 +8,23 @@ import (
 	"github.com/crowley-io/pack/docker"
 )
 
-var (
-	// ErrOutputRequired is returned when output isn't defined in the configuration.
-	ErrOutputRequired = errors.New("configuration(install): output is required")
-	// ErrPathRequired is returned when path isn't defined in the configuration.
-	ErrPathRequired = errors.New("configuration(install): path is required")
-	// ErrImageRequired is returned when path isn't defined in the configuration.
-	ErrImageRequired = errors.New("configuration(install): image is required")
-	// ErrConfigurationEmpty is returned when Install is called with an empty configuration.
-	ErrConfigurationEmpty = errors.New("configuration is required")
-)
-
 // Install run compile instructions with a Docker container.
 func Install(client docker.Docker, configuration *configuration.Configuration) error {
 
-	if err := ValidateConfiguration(configuration); err != nil {
+	if err := configuration.Validate(); err != nil {
 		return err
 	}
 
 	env, err := GetEnv(configuration)
 
+	// TODO Unit testing for this case.
 	if err != nil {
 		return err
 	}
 
 	volumes, err := GetVolumes(configuration)
 
+	// TODO Unit testing for this case.
 	if err != nil {
 		return err
 	}
@@ -62,28 +52,6 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 
 	if !pathExist(output) {
 		return fmt.Errorf("file not found: %s", output)
-	}
-
-	return nil
-}
-
-// ValidateConfiguration return an error if the given Configuration has flaw.
-func ValidateConfiguration(c *configuration.Configuration) error {
-
-	if c == nil {
-		return ErrConfigurationEmpty
-	}
-
-	if c.Output == "" {
-		return ErrOutputRequired
-	}
-
-	if c.Install.Path == "" {
-		return ErrPathRequired
-	}
-
-	if c.Install.Image == "" {
-		return ErrImageRequired
 	}
 
 	return nil
