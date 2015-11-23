@@ -1,0 +1,6 @@
+---
+install:
+    image: packer-go
+    path: /usr/local/go
+compose:
+    name: shen
