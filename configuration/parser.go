@@ -9,7 +9,7 @@ import (
 // Parse a file path and inflate a new Configuration
 func Parse(path string) (*Configuration, error) {
 
-	c := &Configuration{}
+	c := New()
 	b, err := ioutil.ReadFile(path)
 
 	if err != nil {

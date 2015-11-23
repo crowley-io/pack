@@ -6,11 +6,10 @@ const (
 )
 
 // Values define and use the default Values for the given
-// Configuration, if required.
-func Values(c *Configuration) {
+// Configuration, which will be override later by user's configuration.
+func values(c *Configuration) {
 
-	if c.DockerEndpoint == "" {
-		c.DockerEndpoint = DefaultDockerEndpoint
-	}
+	c.DockerEndpoint = DefaultDockerEndpoint
+	c.Compose.Pull = true
 
 }

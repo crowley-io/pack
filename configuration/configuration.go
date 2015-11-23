@@ -29,3 +29,10 @@ type Compose struct {
 func (c *Configuration) Validate() error {
 	return Validate(c)
 }
+
+// New return a default Configuration.
+func New() *Configuration {
+	c := &Configuration{}
+	values(c)
+	return c
+}
