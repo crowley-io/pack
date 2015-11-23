@@ -5,3 +5,5 @@ install:
     path: /usr/local/go
 compose:
     name: shen
+publish:
+    hostname: localhost:5000

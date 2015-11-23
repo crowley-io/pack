@@ -6,5 +6,8 @@
   },
   "compose": {
     "name": "shen"
+  },
+  "publish": {
+    "hostname": "localhost:5000"
   }
 }
