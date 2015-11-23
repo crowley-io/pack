@@ -40,7 +40,5 @@ func Validate(c *Configuration) error {
 		return ErrNameRequired
 	}
 
-	Values(c)
-
 	return nil
 }
