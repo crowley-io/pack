@@ -13,6 +13,8 @@ var (
 	ErrImageRequired = errors.New("configuration(install): image is required")
 	// ErrNameRequired is returned when image name isn't defined in the configuration.
 	ErrNameRequired = errors.New("configuration(compose): name is required")
+	// ErrHostnameRequired is returned when registry hostname isn't defined in the configuration.
+	ErrHostnameRequired = errors.New("configuration(publish): hostname is required")
 	// ErrConfigurationEmpty is returned when Install is called with an empty configuration.
 	ErrConfigurationEmpty = errors.New("configuration is required")
 )
@@ -38,6 +40,10 @@ func Validate(c *Configuration) error {
 
 	if c.Compose.Name == "" {
 		return ErrNameRequired
+	}
+
+	if c.Publish.Hostname == "" {
+		return ErrHostnameRequired
 	}
 
 	return nil

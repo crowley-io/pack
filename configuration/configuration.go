@@ -6,6 +6,7 @@ type Configuration struct {
 	Output         string
 	Install        Install
 	Compose        Compose
+	Publish        Publish
 }
 
 // Install contains install runtime's configuration.
@@ -17,11 +18,16 @@ type Install struct {
 	Volumes     []string
 }
 
-// Compose contains pack runtime's configuration.
+// Compose contains compose runtime's configuration.
 type Compose struct {
 	Name    string
 	NoCache bool `yaml:"no-cache"`
 	Pull    bool
+}
+
+// Publish contains publish runtime's configuration.
+type Publish struct {
+	Hostname string
 }
 
 // Validate is just a wrapper for the static function with the same name.

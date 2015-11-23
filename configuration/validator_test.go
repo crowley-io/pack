@@ -87,6 +87,18 @@ func TestValidateConfigurationEmptyName(t *testing.T) {
 
 }
 
+func TestValidateConfigurationHostname(t *testing.T) {
+
+	c := newTestConf()
+	c.Publish.Hostname = ""
+
+	err := Validate(c)
+
+	assert.NotNil(t, err)
+	assert.Equal(t, ErrHostnameRequired, err)
+
+}
+
 func newTestConf() *Configuration {
 
 	c := &Configuration{
@@ -97,6 +109,9 @@ func newTestConf() *Configuration {
 		},
 		Compose: Compose{
 			Name: "app",
+		},
+		Publish: Publish{
+			Hostname: "localhost:5000",
 		},
 	}
 
