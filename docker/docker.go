@@ -17,6 +17,8 @@ type Docker interface {
 	Run(option RunOptions) (int, error)
 	// Build create a new image from a Dockerfile.
 	Build(option BuildOptions) error
+	// Tag adds a tag to the image for a repository.
+	Tag(option TagOptions) error
 }
 
 // The default implementation of the Docker interface.
