@@ -8,6 +8,7 @@ import (
 	"github.com/crowley-io/pack/configuration"
 	"github.com/crowley-io/pack/docker"
 	"github.com/crowley-io/pack/install"
+	"github.com/crowley-io/pack/publish"
 	cli "github.com/jawher/mow.cli"
 )
 
@@ -25,6 +26,10 @@ func run(dck docker.Docker, cnf *configuration.Configuration) error {
 	}
 
 	if err := compose.Compose(dck, cnf); err != nil {
+		return err
+	}
+
+	if err := publish.Publish(dck, cnf); err != nil {
 		return err
 	}
 
