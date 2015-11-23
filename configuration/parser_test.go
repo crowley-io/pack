@@ -48,6 +48,19 @@ func TestParseWithSyntaxError(t *testing.T) {
 	assert.Nil(t, c)
 }
 
+func TestParseWithConfigurationError(t *testing.T) {
+
+	c, err := Parse("../testing/packer-nooutput.yml")
+
+	if !assert.NotNil(t, err) {
+		t.Fatal("an error was expected")
+	}
+
+	assert.Nil(t, c)
+	assert.Equal(t, ErrOutputRequired, err)
+
+}
+
 func testConfArgs(t *testing.T, c *Configuration) {
 	assert.Equal(t, "app.tar.gz", c.Output)
 	assert.Equal(t, "packer-go", c.Install.Image)
