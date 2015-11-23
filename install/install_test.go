@@ -31,6 +31,10 @@ func (m *DockerMock) Build(option docker.BuildOptions) error {
 	return nil
 }
 
+func (m *DockerMock) Tag(option docker.TagOptions) error {
+	return nil
+}
+
 func TestInstall(t *testing.T) {
 
 	c, o := dockerMockConf("../testing/app.bin")
@@ -124,6 +128,9 @@ func dockerMockConf(output string) (*configuration.Configuration, docker.RunOpti
 		},
 		Compose: configuration.Compose{
 			Name: "debian",
+		},
+		Publish: configuration.Publish{
+			Hostname: "localhost:5000",
 		},
 	}
 
