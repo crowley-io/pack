@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"strings"
 
 	"github.com/crowley-io/pack/configuration"
 )
@@ -63,7 +64,28 @@ func expandEnv(list []string) []string {
 	var env []string
 
 	for _, e := range list {
-		env = append(env, os.ExpandEnv(e))
+
+		p := strings.SplitN(e, "=", 2)
+
+		if len(p) == 2 {
+
+			k := p[0]
+			v := p[1]
+
+			// Ignore environment variables replacement if value start and finish by
+			// single quote.
+			if strings.HasPrefix(v, "'") && strings.HasSuffix(v, "'") {
+
+				v = v[1 : len(v)-1]
+				e = fmt.Sprintf("%s=%s", k, v)
+
+			} else {
+				e = os.ExpandEnv(e)
+			}
+
+		}
+
+		env = append(env, e)
 	}
 
 	return env

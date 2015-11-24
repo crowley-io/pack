@@ -55,13 +55,14 @@ func TestGetEnv(t *testing.T) {
 	o := "libshaped.so"
 	p := "/media/app"
 	u := "DB_URI=mongodb://user:password@host:27017/db"
+	s := "SECRET_KEY='3ztP7$Xqoef=VUdPa'"
 	f := "GOPATH=$PATH:/usr/local/go"
 
 	c := &configuration.Configuration{
 		Install: configuration.Install{
 			Path:        p,
 			Output:      o,
-			Environment: []string{u, f},
+			Environment: []string{u, f, s},
 		},
 	}
 
@@ -75,5 +76,6 @@ func TestGetEnv(t *testing.T) {
 	assert.Contains(t, e, fmt.Sprintf("CROWLEY_PACK_DIRECTORY=%s", p))
 	assert.Contains(t, e, fmt.Sprintf("CROWLEY_PACK_OUTPUT=%s/%s", p, o))
 	assert.Contains(t, e, fmt.Sprintf("GOPATH=%s:/usr/local/go", path))
+	assert.Contains(t, e, "SECRET_KEY=3ztP7$Xqoef=VUdPa")
 
 }
