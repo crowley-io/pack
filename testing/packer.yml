@@ -1,8 +1,8 @@
 ---
-output: app.tar.gz
 install:
     image: packer-go
     path: /usr/local/go
+    output: app.tar.gz
 compose:
     name: shen
 publish:

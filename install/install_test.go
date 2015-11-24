@@ -124,11 +124,11 @@ func TestInstallWithNoOutput(t *testing.T) {
 func dockerMockConf(output string) (*configuration.Configuration, docker.RunOptions) {
 
 	c := &configuration.Configuration{
-		Output: output,
 		Install: configuration.Install{
 			Command: "make",
 			Path:    "/root",
 			Image:   "debian",
+			Output:  output,
 		},
 		Compose: configuration.Compose{
 			Name: "debian",

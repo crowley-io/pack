@@ -1,0 +1,9 @@
+---
+archive: app.tar.gz
+install:
+    image: packer-go
+    input: /usr/local/go
+    output: /media/
+pack:
+    name: shen
+    no-cache: false

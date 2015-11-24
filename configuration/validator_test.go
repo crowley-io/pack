@@ -42,7 +42,7 @@ func TestValidateConfiguration(t *testing.T) {
 func TestValidateConfigurationEmptyOutput(t *testing.T) {
 
 	c := newTestConf()
-	c.Output = ""
+	c.Install.Output = ""
 
 	err := Validate(c)
 
@@ -102,10 +102,10 @@ func TestValidateConfigurationHostname(t *testing.T) {
 func newTestConf() *Configuration {
 
 	c := &Configuration{
-		Output: "file",
 		Install: Install{
-			Image: "debian",
-			Path:  "/root",
+			Image:  "debian",
+			Path:   "/root",
+			Output: "file",
 		},
 		Compose: Compose{
 			Name: "app",

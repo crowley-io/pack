@@ -54,9 +54,9 @@ func TestGetEnv(t *testing.T) {
 	u := "DB_URI=mongodb://user:password@host:27017/db"
 
 	c := &configuration.Configuration{
-		Output: o,
 		Install: configuration.Install{
 			Path:        p,
+			Output:      o,
 			Environment: []string{u},
 		},
 	}

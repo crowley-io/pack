@@ -27,7 +27,7 @@ func GetEnv(configuration *configuration.Configuration) ([]string, error) {
 
 	e := configuration.Install.Environment
 	p := path.Clean(configuration.Install.Path)
-	o := path.Clean(configuration.Output)
+	o := path.Clean(configuration.Install.Output)
 
 	e = addUserEnv(e)
 	e = addPathEnv(e, p, path.Join(p, o))

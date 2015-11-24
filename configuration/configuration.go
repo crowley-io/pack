@@ -3,7 +3,6 @@ package configuration
 // Configuration contains pack runtime instructions.
 type Configuration struct {
 	DockerEndpoint string
-	Output         string
 	Install        Install
 	Compose        Compose
 	Publish        Publish
@@ -13,6 +12,7 @@ type Configuration struct {
 type Install struct {
 	Image       string
 	Path        string
+	Output      string
 	Command     string
 	Environment []string
 	Volumes     []string

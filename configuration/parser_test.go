@@ -62,8 +62,9 @@ func TestParseWithConfigurationError(t *testing.T) {
 }
 
 func testConfArgs(t *testing.T, c *Configuration) {
-	assert.Equal(t, "app.tar.gz", c.Output)
+	assert.Equal(t, "app.tar.gz", c.Install.Output)
 	assert.Equal(t, "packer-go", c.Install.Image)
 	assert.Equal(t, "/usr/local/go", c.Install.Path)
 	assert.Equal(t, "shen", c.Compose.Name)
+	assert.Equal(t, "localhost:5000", c.Publish.Hostname)
 }

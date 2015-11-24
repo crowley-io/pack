@@ -29,7 +29,7 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 		return err
 	}
 
-	output := configuration.Output
+	output := configuration.Install.Output
 	image := configuration.Install.Image
 	command := configuration.Install.Command
 
