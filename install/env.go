@@ -25,7 +25,7 @@ const (
 // GetEnv return the required environment variables for the container.
 func GetEnv(configuration *configuration.Configuration) ([]string, error) {
 
-	e := configuration.Install.Environment
+	e := expandEnv(configuration.Install.Environment)
 	p := path.Clean(configuration.Install.Path)
 	o := path.Clean(configuration.Install.Output)
 
@@ -56,6 +56,17 @@ func home() (h string) {
 func pwd() string {
 	p, _ := os.Getwd()
 	return p
+}
+
+func expandEnv(list []string) []string {
+
+	var env []string
+
+	for _, e := range list {
+		env = append(env, os.ExpandEnv(e))
+	}
+
+	return env
 }
 
 func addUserEnv(env []string) []string {
