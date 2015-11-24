@@ -7,7 +7,9 @@ install:
         - ~/.ssh:/home/user/.ssh
         - /media/hd0:/usr/local/data
     environment:
-        - FOO=bar
+        - API_URI=http://api.example.com
+        - API_ACCESS_KEY='3ztP7$Xqoef=VUdPa'
+        - API_SECRET_KEY=$SECRET_KEY
 compose:
     name: user/app
     no-cache: false
