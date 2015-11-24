@@ -27,7 +27,8 @@ func (d docker) Build(option BuildOptions) error {
 }
 
 func buildImageOptions(option BuildOptions) api.BuildImageOptions {
-	return api.BuildImageOptions{
+
+	opts := api.BuildImageOptions{
 		Name:                option.Name,
 		NoCache:             option.NoCache,
 		SuppressOutput:      quiet,
@@ -36,16 +37,11 @@ func buildImageOptions(option BuildOptions) api.BuildImageOptions {
 		Pull:                option.Pull,
 		OutputStream:        os.Stdout,
 		ContextDir:          option.Directory,
-		AuthConfigs: api.AuthConfigurations{
-			// TODO
-			Configs: map[string]api.AuthConfiguration{
-			// "quay.io": {
-			// 	Username:      "foo",
-			// 	Password:      "bar",
-			// 	Email:         "baz",
-			// 	ServerAddress: "quay.io",
-			// },
-			},
-		},
 	}
+
+	if auth := getAuth(); auth != nil {
+		opts.AuthConfigs = *auth
+	}
+
+	return opts
 }

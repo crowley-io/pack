@@ -6,7 +6,6 @@ import (
 
 const (
 	pushRawJSONStream = false
-	pushRegistry      = ""
 )
 
 // PushOptions contains the push configuration for the docker daemon.
@@ -38,12 +37,10 @@ func pushImageOptions(option PushOptions, stream LogStream) api.PushImageOptions
 		Name:          option.Repository,
 		Tag:           option.Tag,
 		OutputStream:  stream.Out,
-		Registry:      pushRegistry,
 		RawJSONStream: pushRawJSONStream,
 	}
 }
 
 func pushAuthConfiguration(option PushOptions) api.AuthConfiguration {
-	// TODO
-	return api.AuthConfiguration{}
+	return getAuthWithRegistry(option.Registry)
 }
