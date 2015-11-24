@@ -1,9 +1,16 @@
 ---
-archive: app.tar.gz
 install:
-    image: packer-go
-    input: /usr/local/go
-    output: /media/
-pack:
-    name: shen
+    image: user/app-packer
+    path: /usr/local/app
+    output: app.tar.gz
+    volumes:
+        - ~/.ssh:/home/user/.ssh
+        - /media/hd0:/usr/local/data
+    environment:
+        - FOO=bar
+compose:
+    name: user/app
     no-cache: false
+    pull: false
+publish:
+    hostname: docker.io
