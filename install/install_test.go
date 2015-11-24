@@ -35,6 +35,10 @@ func (m *DockerMock) Tag(option docker.TagOptions) error {
 	return nil
 }
 
+func (m *DockerMock) Push(option docker.PushOptions, stream docker.LogStream) error {
+	return nil
+}
+
 func TestInstall(t *testing.T) {
 
 	c, o := dockerMockConf("../testing/app.bin")

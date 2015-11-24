@@ -19,6 +19,8 @@ type Docker interface {
 	Build(option BuildOptions) error
 	// Tag adds a tag to the image for a repository.
 	Tag(option TagOptions) error
+	// Push pushes an image to a remote registry.
+	Push(option PushOptions, stream LogStream) error
 }
 
 // The default implementation of the Docker interface.
