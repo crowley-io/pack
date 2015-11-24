@@ -36,5 +36,16 @@ func buildImageOptions(option BuildOptions) api.BuildImageOptions {
 		Pull:                option.Pull,
 		OutputStream:        os.Stdout,
 		ContextDir:          option.Directory,
+		AuthConfigs: api.AuthConfigurations{
+			// TODO
+			Configs: map[string]api.AuthConfiguration{
+			// "quay.io": {
+			// 	Username:      "foo",
+			// 	Password:      "bar",
+			// 	Email:         "baz",
+			// 	ServerAddress: "quay.io",
+			// },
+			},
+		},
 	}
 }
