@@ -17,7 +17,6 @@ func Publish(client docker.Docker, configuration *configuration.Configuration) e
 	name := configuration.Compose.Name
 	registry := configuration.Publish.Hostname
 	repository, tag := parseRepositoryTag(fmt.Sprintf("%s/%s", registry, name))
-	stream := docker.NewLogStream()
 
 	to := docker.TagOptions{
 		Name:       name,
@@ -40,6 +39,6 @@ func Publish(client docker.Docker, configuration *configuration.Configuration) e
 		return err
 	}
 
-	return client.Push(po, stream)
+	return client.Push(po, docker.NewLogStream())
 
 }

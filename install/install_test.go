@@ -14,8 +14,8 @@ type DockerMock struct {
 	mock.Mock
 }
 
-func (m *DockerMock) Run(option docker.RunOptions) (int, error) {
-	args := m.Called(option)
+func (m *DockerMock) Run(option docker.RunOptions, stream docker.LogStream) (int, error) {
+	args := m.Called(option, stream)
 	return args.Int(0), args.Error(1)
 }
 
@@ -27,7 +27,7 @@ func (m *DockerMock) Logs(id string, stream docker.LogStream) error {
 	return nil
 }
 
-func (m *DockerMock) Build(option docker.BuildOptions) error {
+func (m *DockerMock) Build(option docker.BuildOptions, stream docker.LogStream) error {
 	return nil
 }
 
@@ -52,7 +52,7 @@ func TestInstall(t *testing.T) {
 	c, o := dockerMockConf("../testing/app.bin")
 
 	d := &DockerMock{}
-	d.On("Run", o).Return(0, nil)
+	d.On("Run", o, docker.NewLogStream()).Return(0, nil)
 
 	err := Install(d, c)
 
@@ -66,7 +66,7 @@ func TestInstallOnError(t *testing.T) {
 	c, o := dockerMockConf("../testing/app.bin")
 
 	d := &DockerMock{}
-	d.On("Run", o).Return(255, nil)
+	d.On("Run", o, docker.NewLogStream()).Return(255, nil)
 
 	err := Install(d, c)
 
@@ -81,7 +81,7 @@ func TestInstallWithDockerError(t *testing.T) {
 
 	d := &DockerMock{}
 	e := errors.New("an error")
-	d.On("Run", o).Return(0, e)
+	d.On("Run", o, docker.NewLogStream()).Return(0, e)
 
 	err := Install(d, c)
 
@@ -120,7 +120,7 @@ func TestInstallWithNoOutput(t *testing.T) {
 	c, o := dockerMockConf("file.txt")
 
 	d := &DockerMock{}
-	d.On("Run", o).Return(0, nil)
+	d.On("Run", o, docker.NewLogStream()).Return(0, nil)
 
 	err := Install(d, c)
 
