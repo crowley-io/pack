@@ -4,6 +4,7 @@ import (
 	api "github.com/fsouza/go-dockerclient"
 )
 
+// Push options
 const (
 	pushRawJSONStream = false
 )
@@ -18,17 +19,6 @@ type PushOptions struct {
 
 // See Docker interface
 func (d docker) Push(option PushOptions, stream LogStream) error {
-
-	o := TagOptions{
-		Name:       option.Name,
-		Repository: option.Repository,
-		Tag:        option.Tag,
-	}
-
-	if err := d.Tag(o); err != nil {
-		return err
-	}
-
 	return d.client.PushImage(pushImageOptions(option, stream), pushAuthConfiguration(option))
 }
 
