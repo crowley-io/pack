@@ -34,6 +34,6 @@ func Compose(client docker.Docker, configuration *configuration.Configuration) e
 		NoCache:   noCache,
 	}
 
-	return client.Build(option)
+	return client.Build(option, docker.NewLogStream())
 
 }

@@ -40,7 +40,7 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 		Volumes: volumes,
 	}
 
-	exit, err := client.Run(option)
+	exit, err := client.Run(option, docker.NewLogStream())
 
 	if err != nil {
 		return err
