@@ -2,7 +2,6 @@ package docker
 
 import (
 	"fmt"
-	"os"
 	"strings"
 
 	api "github.com/fsouza/go-dockerclient"
@@ -29,7 +28,7 @@ type RunOptions struct {
 }
 
 // See Docker interface
-func (d docker) Run(option RunOptions) (int, error) {
+func (d docker) Run(option RunOptions, stream LogStream) (int, error) {
 
 	e, err := d.client.CreateContainer(createContainerOptions(option))
 
@@ -43,10 +42,10 @@ func (d docker) Run(option RunOptions) (int, error) {
 		return 0, err
 	}
 
-	err = d.Logs(id, LogStream{Out: os.Stdout, Err: os.Stderr})
+	err = d.Logs(id, stream)
 
 	if err != nil {
-		fmt.Fprint(os.Stderr, err)
+		fmt.Fprint(stream.Err, err)
 	}
 
 	exit, err := d.client.WaitContainer(id)

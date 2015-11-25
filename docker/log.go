@@ -20,10 +20,7 @@ func (d docker) Logs(id string, stream LogStream) error {
 
 // NewLogStream return a default LogStream using OS stdout and stderr.
 func NewLogStream() LogStream {
-	return LogStream{
-		Out: os.Stdout,
-		Err: os.Stderr,
-	}
+	return LogStream{Out: os.Stdout, Err: os.Stderr}
 }
 
 func logsOptions(container string, stream LogStream) api.LogsOptions {

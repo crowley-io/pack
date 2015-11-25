@@ -1,8 +1,6 @@
 package docker
 
 import (
-	"os"
-
 	api "github.com/fsouza/go-dockerclient"
 )
 
@@ -22,11 +20,11 @@ type BuildOptions struct {
 }
 
 // See Docker interface
-func (d docker) Build(option BuildOptions) error {
-	return d.client.BuildImage(buildImageOptions(option))
+func (d docker) Build(option BuildOptions, stream LogStream) error {
+	return d.client.BuildImage(buildImageOptions(option, stream))
 }
 
-func buildImageOptions(option BuildOptions) api.BuildImageOptions {
+func buildImageOptions(option BuildOptions, stream LogStream) api.BuildImageOptions {
 
 	opts := api.BuildImageOptions{
 		Name:                option.Name,
@@ -35,7 +33,7 @@ func buildImageOptions(option BuildOptions) api.BuildImageOptions {
 		RmTmpContainer:      rm,
 		ForceRmTmpContainer: forceRm,
 		Pull:                option.Pull,
-		OutputStream:        os.Stdout,
+		OutputStream:        stream.Out,
 		ContextDir:          option.Directory,
 	}
 

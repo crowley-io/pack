@@ -14,9 +14,9 @@ type Docker interface {
 	Logs(id string, stream LogStream) error
 	// Run create and start a container to execute a runnable.
 	// Return the exit code of the container status, an error otherwise.
-	Run(option RunOptions) (int, error)
+	Run(option RunOptions, stream LogStream) (int, error)
 	// Build create a new image from a Dockerfile.
-	Build(option BuildOptions) error
+	Build(option BuildOptions, stream LogStream) error
 	// Tag adds a tag to the image for a repository.
 	Tag(option TagOptions) error
 	// Push pushes an image to a remote registry.
