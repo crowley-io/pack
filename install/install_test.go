@@ -39,6 +39,14 @@ func (m *DockerMock) Push(option docker.PushOptions, stream docker.LogStream) er
 	return nil
 }
 
+func (m *DockerMock) ImageID(name string) string {
+	return ""
+}
+
+func (m *DockerMock) RemoveImage(name string) error {
+	return nil
+}
+
 func TestInstall(t *testing.T) {
 
 	c, o := dockerMockConf("../testing/app.bin")

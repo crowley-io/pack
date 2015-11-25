@@ -21,6 +21,10 @@ type Docker interface {
 	Tag(option TagOptions) error
 	// Push pushes an image to a remote registry.
 	Push(option PushOptions, stream LogStream) error
+	// ImageID returns an image ID by its name.
+	ImageID(name string) string
+	// RemoveImage removes an image by its name or ID.
+	RemoveImage(name string) error
 }
 
 // The default implementation of the Docker interface.
