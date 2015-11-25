@@ -6,7 +6,7 @@ import (
 
 // Tag options
 const (
-	tagForce = true // force
+	tagForce = true
 )
 
 // TagOptions contains the tag configuration for the docker daemon.
