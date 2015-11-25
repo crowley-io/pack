@@ -15,18 +15,31 @@ func Publish(client docker.Docker, configuration *configuration.Configuration) e
 	}
 
 	name := configuration.Compose.Name
-	hostname := configuration.Publish.Hostname
+	registry := configuration.Publish.Hostname
+	repository, tag := parseRepositoryTag(fmt.Sprintf("%s/%s", registry, name))
 	stream := docker.NewLogStream()
 
-	repository, tag := parseRepositoryTag(fmt.Sprintf("%s/%s", hostname, name))
-
-	option := docker.PushOptions{
+	to := docker.TagOptions{
 		Name:       name,
 		Repository: repository,
-		Registry:   hostname,
 		Tag:        tag,
 	}
 
-	return client.Push(option, stream)
+	po := docker.PushOptions{
+		Name:       name,
+		Repository: repository,
+		Registry:   registry,
+		Tag:        tag,
+	}
+
+	if err := client.RemoveImage(repository); err != nil {
+		return err
+	}
+
+	if err := client.Tag(to); err != nil {
+		return err
+	}
+
+	return client.Push(po, stream)
 
 }
