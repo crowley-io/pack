@@ -2,7 +2,7 @@ package configuration
 
 // Configuration contains pack runtime instructions.
 type Configuration struct {
-	DockerEndpoint string
+	DockerEndpoint string `yaml:"docker-endpoint"`
 	Install        Install
 	Compose        Compose
 	Publish        Publish
