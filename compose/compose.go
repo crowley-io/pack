@@ -24,6 +24,9 @@ func Compose(client docker.Docker, configuration *configuration.Configuration) e
 		return err
 	}
 
+	id := client.ImageID(name)
+	defer client.RemoveImage(id)
+
 	option := docker.BuildOptions{
 		Name:      name,
 		Directory: directory,
