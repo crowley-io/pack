@@ -6,53 +6,18 @@ import (
 
 	"github.com/crowley-io/pack/configuration"
 	"github.com/crowley-io/pack/docker"
+	mocks "github.com/crowley-io/pack/testing"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
-
-type DockerMock struct {
-	mock.Mock
-}
-
-func (m *DockerMock) Run(option docker.RunOptions, stream docker.LogStream) (int, error) {
-	args := m.Called(option, stream)
-	return args.Int(0), args.Error(1)
-}
-
-func (m *DockerMock) Ping() error {
-	return nil
-}
-
-func (m *DockerMock) Logs(id string, stream docker.LogStream) error {
-	return nil
-}
-
-func (m *DockerMock) Build(option docker.BuildOptions, stream docker.LogStream) error {
-	return nil
-}
-
-func (m *DockerMock) Tag(option docker.TagOptions) error {
-	return nil
-}
-
-func (m *DockerMock) Push(option docker.PushOptions, stream docker.LogStream) error {
-	return nil
-}
-
-func (m *DockerMock) ImageID(name string) string {
-	return ""
-}
-
-func (m *DockerMock) RemoveImage(name string) error {
-	return nil
-}
 
 func TestInstall(t *testing.T) {
 
-	c, o := dockerMockConf("../testing/app.bin")
+	d := &mocks.DockerMock{}
+	c := &configuration.Configuration{}
+	setCnf(c, "../testing/app.bin")
+	o := dckOpts(t, c)
 
-	d := &DockerMock{}
-	d.On("Run", o, docker.NewLogStream()).Return(0, nil)
+	wireMock(d, o, 0, nil)
 
 	err := Install(d, c)
 
@@ -63,10 +28,12 @@ func TestInstall(t *testing.T) {
 
 func TestInstallOnError(t *testing.T) {
 
-	c, o := dockerMockConf("../testing/app.bin")
+	d := &mocks.DockerMock{}
+	c := &configuration.Configuration{}
+	setCnf(c, "../testing/app.bin")
+	o := dckOpts(t, c)
 
-	d := &DockerMock{}
-	d.On("Run", o, docker.NewLogStream()).Return(255, nil)
+	wireMock(d, o, 255, nil)
 
 	err := Install(d, c)
 
@@ -77,11 +44,13 @@ func TestInstallOnError(t *testing.T) {
 
 func TestInstallWithDockerError(t *testing.T) {
 
-	c, o := dockerMockConf("../testing/app.bin")
-
-	d := &DockerMock{}
+	d := &mocks.DockerMock{}
+	c := &configuration.Configuration{}
 	e := errors.New("an error")
-	d.On("Run", o, docker.NewLogStream()).Return(0, e)
+	setCnf(c, "../testing/app.bin")
+	o := dckOpts(t, c)
+
+	wireMock(d, o, 0, e)
 
 	err := Install(d, c)
 
@@ -93,19 +62,21 @@ func TestInstallWithDockerError(t *testing.T) {
 
 func TestInstallWithConfigurationError(t *testing.T) {
 
+	d := &mocks.DockerMock{}
 	c := &configuration.Configuration{}
-	d := &DockerMock{}
+	setCnf(c, "")
 
 	err := Install(d, c)
 
 	d.AssertExpectations(t)
 	assert.NotNil(t, err)
+	assert.Equal(t, configuration.ErrOutputRequired, err)
 
 }
 
 func TestInstallWithNilConfiguration(t *testing.T) {
 
-	d := &DockerMock{}
+	d := &mocks.DockerMock{}
 
 	err := Install(d, nil)
 
@@ -117,10 +88,12 @@ func TestInstallWithNilConfiguration(t *testing.T) {
 
 func TestInstallWithNoOutput(t *testing.T) {
 
-	c, o := dockerMockConf("file.txt")
+	d := &mocks.DockerMock{}
+	c := &configuration.Configuration{}
+	setCnf(c, "file.txt")
+	o := dckOpts(t, c)
 
-	d := &DockerMock{}
-	d.On("Run", o, docker.NewLogStream()).Return(0, nil)
+	wireMock(d, o, 0, nil)
 
 	err := Install(d, c)
 
@@ -129,32 +102,41 @@ func TestInstallWithNoOutput(t *testing.T) {
 
 }
 
-func dockerMockConf(output string) (*configuration.Configuration, docker.RunOptions) {
+func wireMock(m *mocks.DockerMock, o docker.RunOptions, status int, err error) {
+	m.On("Run", o, docker.NewLogStream()).Return(status, err)
+}
 
-	c := &configuration.Configuration{
-		Install: configuration.Install{
-			Command: "make",
-			Path:    "/root",
-			Image:   "debian",
-			Output:  output,
-		},
-		Compose: configuration.Compose{
-			Name: "debian",
-		},
-		Publish: configuration.Publish{
-			Hostname: "localhost:5000",
-		},
+func dckOpts(t *testing.T, c *configuration.Configuration) docker.RunOptions {
+
+	e, err := GetEnv(c)
+	if !assert.Nil(t, err) {
+		t.FailNow()
 	}
 
-	e, _ := GetEnv(c)
-	v, _ := GetVolumes(c)
+	v, err := GetVolumes(c)
+	if !assert.Nil(t, err) {
+		t.FailNow()
+	}
 
-	o := docker.RunOptions{
+	return docker.RunOptions{
 		Image:   "debian",
 		Command: "make",
 		Env:     e,
 		Volumes: v,
 	}
+}
 
-	return c, o
+func setCnf(c *configuration.Configuration, output string) {
+	c.Install = configuration.Install{
+		Command: "make",
+		Path:    "/root",
+		Image:   "debian",
+		Output:  output,
+	}
+	c.Compose = configuration.Compose{
+		Name: "debian",
+	}
+	c.Publish = configuration.Publish{
+		Hostname: "localhost:5000",
+	}
 }

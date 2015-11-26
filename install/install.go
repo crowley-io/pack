@@ -17,14 +17,12 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 
 	env, err := GetEnv(configuration)
 
-	// TODO Unit testing for this case.
 	if err != nil {
 		return err
 	}
 
 	volumes, err := GetVolumes(configuration)
 
-	// TODO Unit testing for this case.
 	if err != nil {
 		return err
 	}
