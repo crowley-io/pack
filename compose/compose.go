@@ -1,7 +1,6 @@
 package compose
 
 import (
-	//	"errors"
 	"os"
 
 	"github.com/crowley-io/pack/configuration"
