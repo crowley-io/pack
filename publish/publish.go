@@ -14,31 +14,60 @@ func Publish(client docker.Docker, configuration *configuration.Configuration) e
 		return err
 	}
 
-	name := configuration.Compose.Name
-	registry := configuration.Publish.Hostname
-	repository, tag := parseRepositoryTag(fmt.Sprintf("%s/%s", registry, name))
+	t, p := options(configuration)
 
-	to := docker.TagOptions{
+	if err := client.Tag(t); err != nil {
+		return err
+	}
+
+	return client.Push(p, docker.NewLogStream())
+}
+
+func options(configuration *configuration.Configuration) (docker.TagOptions, docker.PushOptions) {
+
+	name := Name(configuration)
+	registry := Registry(configuration)
+	repository, tag := parseRepositoryTag(Remote(configuration))
+
+	t := docker.TagOptions{
 		Name:       name,
 		Repository: repository,
 		Tag:        tag,
 	}
 
-	po := docker.PushOptions{
+	p := docker.PushOptions{
 		Name:       name,
 		Repository: repository,
 		Registry:   registry,
 		Tag:        tag,
 	}
 
-	if err := client.RemoveImage(repository); err != nil {
-		return err
-	}
+	return t, p
+}
 
-	if err := client.Tag(to); err != nil {
-		return err
-	}
+// Name returns the image's name. (ie: name[:tag])
+func Name(configuration *configuration.Configuration) string {
+	return configuration.Compose.Name
+}
 
-	return client.Push(po, docker.NewLogStream())
+// Registry returns the image's registry. (ie: host[:port])
+func Registry(configuration *configuration.Configuration) string {
+	return configuration.Publish.Hostname
+}
 
+// Remote returns the image's remote identifier. (ie: registry/name[:tag])
+func Remote(configuration *configuration.Configuration) string {
+	return fmt.Sprintf("%s/%s", Registry(configuration), Name(configuration))
+}
+
+// Repository returns the image's repository. (ie: registry/name)
+func Repository(configuration *configuration.Configuration) string {
+	r, _ := parseRepositoryTag(Remote(configuration))
+	return r
+}
+
+// Tag returns the image's tag.
+func Tag(configuration *configuration.Configuration) string {
+	_, t := parseRepositoryTag(Remote(configuration))
+	return t
 }
