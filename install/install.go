@@ -15,6 +15,10 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 		return err
 	}
 
+	if configuration.Install.Disable {
+		return nil
+	}
+
 	env, err := GetEnv(configuration)
 
 	if err != nil {

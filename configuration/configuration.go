@@ -10,6 +10,7 @@ type Configuration struct {
 
 // Install contains install runtime's configuration.
 type Install struct {
+	Disable     bool
 	Image       string
 	Path        string
 	Output      string

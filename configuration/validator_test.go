@@ -75,6 +75,17 @@ func TestValidateConfigurationEmptyPath(t *testing.T) {
 
 }
 
+func TestValidateConfigurationInstallDisabled(t *testing.T) {
+
+	c := newTestConf()
+	c.Install = Install{Disable: true}
+
+	err := Validate(c)
+
+	assert.Nil(t, err)
+
+}
+
 func TestValidateConfigurationEmptyName(t *testing.T) {
 
 	c := newTestConf()
@@ -87,7 +98,7 @@ func TestValidateConfigurationEmptyName(t *testing.T) {
 
 }
 
-func TestValidateConfigurationHostname(t *testing.T) {
+func TestValidateConfigurationEmptyHostname(t *testing.T) {
 
 	c := newTestConf()
 	c.Publish.Hostname = ""

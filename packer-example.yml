@@ -1,5 +1,6 @@
 ---
 install:
+    disable: false
     image: user/app-packer
     path: /usr/local/app
     output: app.tar.gz

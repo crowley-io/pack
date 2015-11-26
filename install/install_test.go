@@ -102,6 +102,20 @@ func TestInstallWithNoOutput(t *testing.T) {
 
 }
 
+func TestInstallDisabled(t *testing.T) {
+
+	d := &mocks.DockerMock{}
+	c := &configuration.Configuration{}
+	setCnf(c, "../testing/app.bin")
+	c.Install = configuration.Install{Disable: true}
+
+	err := Install(d, c)
+
+	d.AssertExpectations(t)
+	assert.Nil(t, err)
+
+}
+
 func wireMock(m *mocks.DockerMock, o docker.RunOptions, status int, err error) {
 	m.On("Run", o, docker.NewLogStream()).Return(status, err)
 }

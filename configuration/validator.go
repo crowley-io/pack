@@ -26,16 +26,20 @@ func Validate(c *Configuration) error {
 		return ErrConfigurationEmpty
 	}
 
-	if c.Install.Output == "" {
-		return ErrOutputRequired
-	}
+	if c.Install.Disable == false {
 
-	if c.Install.Path == "" {
-		return ErrPathRequired
-	}
+		if c.Install.Output == "" {
+			return ErrOutputRequired
+		}
 
-	if c.Install.Image == "" {
-		return ErrImageRequired
+		if c.Install.Path == "" {
+			return ErrPathRequired
+		}
+
+		if c.Install.Image == "" {
+			return ErrImageRequired
+		}
+
 	}
 
 	if c.Compose.Name == "" {
