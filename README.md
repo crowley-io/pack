@@ -101,4 +101,45 @@ publish:
 
 ## Packer
 
-> // TODO
+A packer image should respect the following guidelines to ensure that the building process runs smoothly without any issue.
+
+First of all, the container receives the following environment variables:
+
+ * `CROWLEY_PACK_USER`
+ * `CROWLEY_PACK_GROUP`
+ * `CROWLEY_PACK_DIRECTORY`
+ * `CROWLEY_PACK_OUTPUT`
+
+These environment variables define a guideline configuration for the build process such as the user and the group of the output file, its path and also its working directory.
+
+For example, you can define the following minimal `Dockerfile`:
+
+```dockerfile
+# Dockerfile for a generic packer
+FROM debian:jessie
+
+RUN apt-get update && apt-get install -y build-essential
+ADD pack /usr/local/bin/
+RUN chmod +x /usr/local/bin/pack
+CMD pack
+```
+
+Using this script as `pack`:
+
+```bash
+#!/bin/bash
+
+# Fail hard and fast
+set -eo pipefail
+
+# First, change the working directory
+cd ${CROWLEY_PACK_DIRECTORY}
+
+# Then, make will build our binary in $CROWLEY_PACK_OUTPUT
+make
+
+# Finally, update output owner since we may run as root user...
+chown ${CROWLEY_PACK_USER}:${CROWLEY_PACK_GROUP} ${CROWLEY_PACK_OUTPUT}
+```
+
+This should provide you a minimal framework on how to build your packer image.
