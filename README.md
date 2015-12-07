@@ -55,6 +55,13 @@ install:
         - API_SECRET_KEY=$SECRET_KEY
 ```
 
+* **disable**: Do not perform install process.
+* **image**: Image used to perform the install process _(a packer)_.
+* **path**: Path inside the container which will contains your working directory.
+* **output**: Filename used as output when your project build is successful.
+* **volumes**: Volumes to mount for the running container.
+* **environment**: Environment variables to inject for the running container.
+
 ### Compose
 
 ```yaml
@@ -64,6 +71,10 @@ compose:
     pull: false
 ```
 
+* **name**: Repository name (and optionally a tag) for the image.
+* **no-cache**: Do not use cache when building the image.
+* **pull**: Always attempt to pull a newer version of the image.
+
 ### Publish
 
 ```yaml
@@ -71,9 +82,7 @@ publish:
     hostname: docker.io
 ```
 
-* **name**: Repository name (and optionally a tag) for the image.
-* **no-cache**: Do not use cache when building the image.
-* **pull**: Always attempt to pull a newer version of the image.
+* **hostname**: Registry hostname (with a optional port).
 
 ## Packer
 
