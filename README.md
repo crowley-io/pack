@@ -14,7 +14,9 @@ Each module is run as a sequential processing. If a module fails, the build proc
 
 ### Install
 
-The **install** module export a file _(a binary or an archive, for example)_ using a Docker container. This container _(called a packer)_ will run a command in order to create the required file for the **compose** module.
+The **install** module export a file _(a binary or an archive, for example)_ using a Docker container. This container _(called a packer)_ will run a command in order to create the required file for the **compose** module _(and its Dockerfile)_.
+
+The packer image must contains your development dependencies to execute your project's build and follow a guideline _(see **Packer** paragraph)_, in contrast with the image created with _compose_ which should only contains your minimal runtime dependencies.
 
 > **NOTE:** You can disable this module if you don't require a generated file for compose.
 
@@ -22,9 +24,9 @@ For further informations, please read the **Configuration** and **Packer** parag
 
 ### Compose
 
-The **compose** module create a Docker images using the current working directory as _"context"_ with its `Dockerfile`. In order to maintain a clean Docker environment, if an image exists with the same name and tag _(or repository)_, it will be removed.
+The **compose** module create a Docker images using the current working directory as _"context"_ with its `Dockerfile`. Also, its highly recommended to keep a lightweight image with only your runtime dependencies in a minimal way.
 
-Furthermore, a _packer_ is an image used to build your project with your development dependencies, in contrast with an image created with _compose_ that should only contains your - minimal - runtime dependencies.
+> **NOTE:** In order to maintain a clean Docker environment, if an image exists with the same name and tag _(or repository)_, it will be removed.
 
 ### Publish
 
