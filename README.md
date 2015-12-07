@@ -2,6 +2,19 @@
 
 A Docker build system.
 
+## Summary
+
+ * [Introduction](#introduction)
+   * [Install](#install)
+   * [Compose](#compose)
+   * [Publish](#publish)
+ * [Usage](#usage)
+ * [Configuration](#configuration)
+   * [Install](#install-1)
+   * [Compose](#compose-1)
+   * [Publish](#publish-1)
+ * [Packer](#packer)
+
 ## Introduction
 
 Pack is a build system for Docker images. It use three modules to perform the provisioning of your Docker image:
