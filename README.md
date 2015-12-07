@@ -36,6 +36,21 @@ The **publish** module will push your image _(from the previous process: compose
 
 If your registry require an authentication, please use `docker login` in order to expose your credentials to the docker's daemon. For further informations, please visit the official [Docker documentation](https://docs.docker.com/engine/reference/commandline/login/)
 
+## Usage
+
+```
+Usage: crowley-pack [OPTIONS]
+
+Docker build system.
+
+Options:
+  -f, --file="packer.yml"   Configuration file
+```
+
+**Example:**
+
+`cd my-app && crowley-pack`
+
 ## Configuration
 
 ### Install
