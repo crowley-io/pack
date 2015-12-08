@@ -12,6 +12,10 @@ import (
 	cli "github.com/jawher/mow.cli"
 )
 
+func start(module string) {
+	fmt.Printf("\n [crowley-pack] -> %s\n\n", module)
+}
+
 func exit(err error, exit int) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -21,14 +25,17 @@ func exit(err error, exit int) {
 
 func run(dck docker.Docker, cnf *configuration.Configuration) error {
 
+	start("install")
 	if err := install.Install(dck, cnf); err != nil {
 		return err
 	}
 
+	start("compose")
 	if err := compose.Compose(dck, cnf); err != nil {
 		return err
 	}
 
+	start("publish")
 	if err := publish.Publish(dck, cnf); err != nil {
 		return err
 	}
