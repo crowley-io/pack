@@ -1,0 +1,10 @@
+---
+install:
+    image: crowleyio/node-packer
+    path: /usr/local/src/node-hello
+    output: app.tar.gz
+compose:
+    name: user/node-hello
+    pull: true
+publish:
+    hostname: localhost:5000
