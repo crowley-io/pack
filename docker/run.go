@@ -30,6 +30,10 @@ type RunOptions struct {
 // See Docker interface
 func (d docker) Run(option RunOptions, stream LogStream) (int, error) {
 
+	if err := d.client.PullImage(pullImageOptions(option, stream), pullAuthConfiguration(option)); err != nil {
+		return 0, err
+	}
+
 	e, err := d.client.CreateContainer(createContainerOptions(option))
 
 	if err != nil {
@@ -62,6 +66,13 @@ func (d docker) Run(option RunOptions, stream LogStream) (int, error) {
 
 }
 
+func pullImageOptions(option RunOptions, stream LogStream) api.PullImageOptions {
+	return api.PullImageOptions{
+		Repository:   option.Image,
+		OutputStream: stream.Out,
+	}
+}
+
 func createContainerOptions(option RunOptions) api.CreateContainerOptions {
 	return api.CreateContainerOptions{
 		Name: containerName,
@@ -87,4 +98,8 @@ func removeContainerOptions(id string) api.RemoveContainerOptions {
 		RemoveVolumes: removeVolumes,
 		Force:         forceRemove,
 	}
+}
+
+func pullAuthConfiguration(option RunOptions) api.AuthConfiguration {
+	return getAuthWithImage(option.Image)
 }

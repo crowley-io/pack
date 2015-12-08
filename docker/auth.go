@@ -32,6 +32,18 @@ func getAuthWithRegistry(registry string) api.AuthConfiguration {
 	return api.AuthConfiguration{}
 }
 
+func getAuthWithImage(image string) api.AuthConfiguration {
+
+	empty := api.AuthConfiguration{}
+	auth := getAuthWithRegistry(image)
+
+	if auth == empty {
+		return getAuthWithRegistry("docker.io")
+	}
+
+	return auth
+}
+
 func indexName(val string) string {
 
 	val = toHostname(val)
