@@ -64,6 +64,8 @@ Options:
 
 `cd my-app && crowley-pack`
 
+> **NOTE**: If you want examples of use-case and/or some demonstration, please follow the `examples/` directory.
+
 ## Configuration
 
 ### Install
@@ -151,7 +153,7 @@ cd ${CROWLEY_PACK_DIRECTORY}
 # Then, make will build our binary in $CROWLEY_PACK_OUTPUT
 make
 
-# Finally, update output owner since we may run as root user...
+# Finally, update output's owner since we may run as root user...
 chown ${CROWLEY_PACK_USER}:${CROWLEY_PACK_GROUP} ${CROWLEY_PACK_OUTPUT}
 ```
 
