@@ -67,8 +67,7 @@ func TestComposeOnError(t *testing.T) {
 
 func wireMock(m *mocks.DockerMock, o docker.BuildOptions, err error) {
 	m.On("Build", o, docker.NewLogStream()).Return(err)
-	m.On("ImageID", o.Name).Return("26913aba19ca")
-	m.On("RemoveImage", "26913aba19ca").Return(nil)
+	m.On("ImageID", o.Name).Return("26913aba19ca").Twice()
 }
 
 func dckOpts(t *testing.T, c *configuration.Configuration) docker.BuildOptions {
