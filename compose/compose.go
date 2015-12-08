@@ -24,7 +24,6 @@ func Compose(client docker.Docker, configuration *configuration.Configuration) e
 	}
 
 	id := client.ImageID(name)
-	defer client.RemoveImage(id)
 
 	option := docker.BuildOptions{
 		Name:      name,
@@ -33,6 +32,14 @@ func Compose(client docker.Docker, configuration *configuration.Configuration) e
 		NoCache:   noCache,
 	}
 
-	return client.Build(option, docker.NewLogStream())
+	err = client.Build(option, docker.NewLogStream())
 
+	if newid := client.ImageID(name); newid != id {
+		// Remove previous image since id doesn't match.
+		if err2 := client.RemoveImage(id); err == nil {
+			err = err2
+		}
+	}
+
+	return err
 }
