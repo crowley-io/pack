@@ -1,6 +1,5 @@
 ---
 install:
-    disable: false
     image: crowleyio/go-packer
     path: /go/src/github.com/crowley-io/pack/examples/go-hello
     output: go-hello
