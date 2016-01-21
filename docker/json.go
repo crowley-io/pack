@@ -12,7 +12,7 @@ type streamDecoderWrapper struct {
 	decoder *json.Decoder
 	reader  *io.PipeReader
 	writer  *io.PipeWriter
-  tty bool
+	tty     bool
 }
 
 type message struct {
