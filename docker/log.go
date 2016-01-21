@@ -7,10 +7,19 @@ import (
 	api "github.com/fsouza/go-dockerclient"
 )
 
+const (
+	rawJSONStream = true
+)
+
 // LogStream contains two io.Writer for respectively, stdout and stderr.
 type LogStream struct {
-	Out io.Writer
-	Err io.Writer
+	Out     io.Writer
+	Err     io.Writer
+	Decoder io.WriteCloser
+}
+
+func (l LogStream) Close() error {
+	return l.Decoder.Close()
 }
 
 // See Docker interface
@@ -20,7 +29,10 @@ func (d docker) Logs(id string, stream LogStream) error {
 
 // NewLogStream return a default LogStream using OS stdout and stderr.
 func NewLogStream() LogStream {
-	return LogStream{Out: os.Stdout, Err: os.Stderr}
+	out := os.Stdout
+	err := os.Stderr
+	decoder := newStreamDecoderWrapper(out, err)
+	return LogStream{Out: out, Err: err, Decoder: decoder}
 }
 
 func logsOptions(container string, stream LogStream) api.LogsOptions {

@@ -19,9 +19,10 @@ func (d docker) Push(option PushOptions, stream LogStream) error {
 
 func pushImageOptions(option PushOptions, stream LogStream) api.PushImageOptions {
 	return api.PushImageOptions{
-		Name:         option.Repository,
-		Tag:          option.Tag,
-		OutputStream: stream.Out,
+		Name:          option.Repository,
+		Tag:           option.Tag,
+		OutputStream:  stream.Decoder,
+		RawJSONStream: rawJSONStream,
 	}
 }
 

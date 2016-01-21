@@ -68,8 +68,9 @@ func (d docker) Run(option RunOptions, stream LogStream) (int, error) {
 
 func pullImageOptions(option RunOptions, stream LogStream) api.PullImageOptions {
 	return api.PullImageOptions{
-		Repository:   option.Image,
-		OutputStream: stream.Out,
+		Repository:    option.Image,
+		OutputStream:  stream.Decoder,
+		RawJSONStream: rawJSONStream,
 	}
 }
 

@@ -33,8 +33,9 @@ func buildImageOptions(option BuildOptions, stream LogStream) api.BuildImageOpti
 		RmTmpContainer:      rm,
 		ForceRmTmpContainer: forceRm,
 		Pull:                option.Pull,
-		OutputStream:        stream.Out,
+		OutputStream:        stream.Decoder,
 		ContextDir:          option.Directory,
+		RawJSONStream:       rawJSONStream,
 	}
 
 	if auth := getAuth(); auth != nil {
