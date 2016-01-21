@@ -1,0 +1,19 @@
+---
+install:
+    disable: false
+    image: user/app-packer
+    path: /usr/local/app
+    output: app.tar.gz
+    volumes:
+        - ~/.ssh:/home/user/.ssh
+        - /media/hd0:/usr/local/data
+    environment:
+        - API_URI=http://api.example.com
+        - API_ACCESS_KEY='3ztP7$Xqoef=VUdPa'
+        - API_SECRET_KEY=$SECRET_KEY
+compose:
+    name: user/app
+    no-cache: false
+    pull: false
+publish:
+    hostname: docker.io

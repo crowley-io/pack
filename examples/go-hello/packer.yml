@@ -1,0 +1,10 @@
+---
+install:
+    image: crowleyio/go-packer
+    path: /go/src/github.com/crowley-io/pack/examples/go-hello
+    output: go-hello
+compose:
+    name: user/go-hello
+    pull: true
+publish:
+    hostname: localhost:5000

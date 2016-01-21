@@ -1,0 +1,13 @@
+{
+  "name": "node-hello",
+  "version": "1.0.0",
+  "description": "An exemple with pack",
+  "main": "./index.js",
+  "scripts": {
+    "build": "true",
+    "test": "eslint *.js"
+  },
+  "devDependencies": {
+    "eslint": "1.7.3"
+  }
+}

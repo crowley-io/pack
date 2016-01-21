@@ -1,0 +1,9 @@
+---
+install:
+    image: packer-go
+    path: /usr/local/go
+    output: app.tar.gz
+compose:
+    name: shen
+publish:
+    hostname: localhost:5000
