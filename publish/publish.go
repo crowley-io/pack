@@ -20,7 +20,14 @@ func Publish(client docker.Docker, configuration *configuration.Configuration) e
 		return err
 	}
 
-	return client.Push(p, docker.NewLogStream())
+	stream := docker.NewLogStream()
+	err := client.Push(p, stream)
+
+	if err2 := stream.Close(); err2 != nil && err == nil {
+		err = err2
+	}
+
+	return err
 }
 
 func options(configuration *configuration.Configuration) (docker.TagOptions, docker.PushOptions) {

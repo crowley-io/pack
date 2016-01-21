@@ -32,13 +32,18 @@ func Compose(client docker.Docker, configuration *configuration.Configuration) e
 		NoCache:   noCache,
 	}
 
-	err = client.Build(option, docker.NewLogStream())
+	stream := docker.NewLogStream()
+	err = client.Build(option, stream)
 
 	if newid := client.ImageID(name); newid != id {
 		// Remove previous image since id doesn't match.
 		if err2 := client.RemoveImage(id); err == nil {
 			err = err2
 		}
+	}
+
+	if err3 := stream.Close(); err3 != nil && err == nil {
+		err = err3
 	}
 
 	return err
