@@ -34,12 +34,10 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 	output := configuration.Install.Output
 	image := configuration.Install.Image
 	command := configuration.Install.Command
-	uid, _ := whoami()
 
 	option := docker.RunOptions{
 		Image:   image,
 		Command: command,
-		User:    uid,
 		Env:     env,
 		Volumes: volumes,
 	}

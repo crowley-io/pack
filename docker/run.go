@@ -24,7 +24,6 @@ const (
 type RunOptions struct {
 	Image   string
 	Command string
-	User    string
 	Env     []string
 	Volumes []string
 }
@@ -111,7 +110,6 @@ func createContainerOptions(option RunOptions) api.CreateContainerOptions {
 			NetworkDisabled: networkDisabled,
 			Image:           option.Image,
 			Cmd:             strings.Fields(option.Command),
-			User:            option.User,
 		},
 		HostConfig: &api.HostConfig{
 			NetworkMode: hostNetworkMode,
