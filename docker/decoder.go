@@ -22,14 +22,14 @@ type message struct {
 	ID       string `json:"id,omitempty"`
 }
 
-func newStreamDecoderWrapper(out io.Writer, err io.Writer) io.WriteCloser {
+func newStreamDecoderWrapper(out io.Writer, err io.Writer, tty bool) io.WriteCloser {
 
 	reader, writer := io.Pipe()
 	decoder := json.NewDecoder(reader)
 
 	wrapper := &streamDecoderWrapper{
 		out: out, err: err, decoder: decoder,
-		reader: reader, writer: writer, tty: true,
+		reader: reader, writer: writer, tty: tty,
 	}
 
 	go wrapper.Flush()

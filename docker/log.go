@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/andrew-d/go-termutil"
 	api "github.com/fsouza/go-dockerclient"
 )
 
@@ -31,7 +32,7 @@ func (d docker) Logs(id string, stream LogStream) error {
 func NewLogStream() LogStream {
 	out := os.Stdout
 	err := os.Stderr
-	decoder := newStreamDecoderWrapper(out, err)
+	decoder := newStreamDecoderWrapper(out, err, termutil.Isatty(out.Fd()))
 	return LogStream{Out: out, Err: err, Decoder: decoder}
 }
 
