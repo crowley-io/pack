@@ -24,4 +24,4 @@ install: pack
 artifacts:
 	gox -osarch="linux/amd64" -output="crowley-pack_{{.OS}}-{{.Arch}}"
 
-.PHONY: clean
+.PHONY: clean pack
