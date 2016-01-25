@@ -3,6 +3,7 @@ package publish
 import (
 	"fmt"
 
+	parser "github.com/crowley-io/docker-parser"
 	"github.com/crowley-io/pack/configuration"
 	"github.com/crowley-io/pack/docker"
 )
@@ -14,27 +15,57 @@ func Publish(client docker.Docker, configuration *configuration.Configuration) e
 		return err
 	}
 
-	t, p := options(configuration)
+	t, p, err := options(configuration)
 
-	if err := client.Tag(t); err != nil {
+	if err != nil {
+		return err
+	}
+
+	if err = client.Tag(t); err != nil {
 		return err
 	}
 
 	stream := docker.NewLogStream()
-	err := client.Push(p, stream)
+	err = client.Push(p, stream)
 
-	if err2 := stream.Close(); err2 != nil && err == nil {
+	// Remove registry tag
+	if err2 := client.RemoveImage(p.Repository); err2 != nil && err == nil {
 		err = err2
+	}
+
+	if err3 := stream.Close(); err3 != nil && err == nil {
+		err = err3
 	}
 
 	return err
 }
 
-func options(configuration *configuration.Configuration) (docker.TagOptions, docker.PushOptions) {
+func parse(configuration *configuration.Configuration) (name, registry, repository, tag string, err error) {
 
-	name := Name(configuration)
-	registry := Registry(configuration)
-	repository, tag := parseRepositoryTag(Remote(configuration))
+	remote := remote(configuration)
+
+	if name, err = parser.Name(remote); err != nil {
+		return
+	}
+
+	if registry, err = parser.Registry(remote); err != nil {
+		return
+	}
+
+	if repository, err = parser.Repository(remote); err != nil {
+		return
+	}
+
+	if tag, err = parser.Tag(remote); err != nil {
+		return
+	}
+
+	return
+}
+
+func options(configuration *configuration.Configuration) (docker.TagOptions, docker.PushOptions, error) {
+
+	name, registry, repository, tag, err := parse(configuration)
 
 	t := docker.TagOptions{
 		Name:       name,
@@ -49,32 +80,10 @@ func options(configuration *configuration.Configuration) (docker.TagOptions, doc
 		Tag:        tag,
 	}
 
-	return t, p
-}
-
-// Name returns the image's name. (ie: name[:tag])
-func Name(configuration *configuration.Configuration) string {
-	return configuration.Compose.Name
-}
-
-// Registry returns the image's registry. (ie: host[:port])
-func Registry(configuration *configuration.Configuration) string {
-	return configuration.Publish.Hostname
+	return t, p, err
 }
 
 // Remote returns the image's remote identifier. (ie: registry/name[:tag])
-func Remote(configuration *configuration.Configuration) string {
-	return fmt.Sprintf("%s/%s", Registry(configuration), Name(configuration))
-}
-
-// Repository returns the image's repository. (ie: registry/name)
-func Repository(configuration *configuration.Configuration) string {
-	r, _ := parseRepositoryTag(Remote(configuration))
-	return r
-}
-
-// Tag returns the image's tag.
-func Tag(configuration *configuration.Configuration) string {
-	_, t := parseRepositoryTag(Remote(configuration))
-	return t
+func remote(configuration *configuration.Configuration) string {
+	return fmt.Sprintf("%s/%s", configuration.Publish.Hostname, configuration.Compose.Name)
 }
