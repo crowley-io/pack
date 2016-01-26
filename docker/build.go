@@ -6,9 +6,11 @@ import (
 
 // Build options
 const (
-	quiet   = false
-	rm      = true
-	forceRm = true
+	buildQuiet   = false
+	buildRm      = true
+	buildForceRm = true
+	buildMemory  = 0
+	buildMemswap = 0
 )
 
 // BuildOptions contains the build configuration for the docker daemon.
@@ -29,13 +31,15 @@ func buildImageOptions(option BuildOptions, stream LogStream) api.BuildImageOpti
 	opts := api.BuildImageOptions{
 		Name:                option.Name,
 		NoCache:             option.NoCache,
-		SuppressOutput:      quiet,
-		RmTmpContainer:      rm,
-		ForceRmTmpContainer: forceRm,
+		SuppressOutput:      buildQuiet,
+		RmTmpContainer:      buildRm,
+		ForceRmTmpContainer: buildForceRm,
 		Pull:                option.Pull,
 		OutputStream:        stream.Decoder,
 		ContextDir:          option.Directory,
 		RawJSONStream:       rawJSONStream,
+		Memory:              buildMemory,
+		Memswap:             buildMemswap,
 	}
 
 	if auth := getAuth(); auth != nil {
