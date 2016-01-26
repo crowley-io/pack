@@ -31,12 +31,12 @@ type RunOptions struct {
 // See Docker interface
 func (d docker) Run(option RunOptions, stream LogStream) (int, error) {
 
-	remote, err := parser.Remote(option.Image)
+	r, err := parser.Parse(option.Image)
 	if err != nil {
 		return 0, err
 	}
 
-	if err := d.client.PullImage(pullImageOptions(remote, stream), pullAuthConfiguration(option)); err != nil {
+	if err := d.client.PullImage(pullImageOptions(r.Remote(), stream), pullAuthConfiguration(option)); err != nil {
 		return 0, err
 	}
 
