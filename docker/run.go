@@ -31,25 +31,12 @@ type RunOptions struct {
 // See Docker interface
 func (d docker) Run(option RunOptions, stream LogStream) (int, error) {
 
-	repository, err := parser.Repository(option.Image)
+	remote, err := parser.Remote(option.Image)
 	if err != nil {
 		return 0, err
 	}
 
-	registry, err := parser.Registry(option.Image)
-	if err != nil {
-		return 0, err
-	}
-
-	tag, err := parser.Tag(option.Image)
-	if err != nil {
-		return 0, err
-	}
-
-	pullOpts := pullImageOptions(repository, registry, tag, stream)
-	authOpts := pullAuthConfiguration(option)
-
-	if err := d.client.PullImage(pullOpts, authOpts); err != nil {
+	if err := d.client.PullImage(pullImageOptions(remote, stream), pullAuthConfiguration(option)); err != nil {
 		return 0, err
 	}
 
@@ -89,11 +76,9 @@ func pullAuthConfiguration(option RunOptions) api.AuthConfiguration {
 	return getAuthWithImage(option.Image)
 }
 
-func pullImageOptions(repository, registry, tag string, stream LogStream) api.PullImageOptions {
+func pullImageOptions(remote string, stream LogStream) api.PullImageOptions {
 	return api.PullImageOptions{
-		Repository:    repository,
-		Registry:      registry,
-		Tag:           tag,
+		Repository:    remote,
 		OutputStream:  stream.Decoder,
 		RawJSONStream: rawJSONStream,
 	}
