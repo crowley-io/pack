@@ -29,7 +29,7 @@ func Publish(client docker.Docker, configuration *configuration.Configuration) e
 	err = client.Push(p, stream)
 
 	// Remove registry tag
-	if err2 := client.RemoveImage(p.Repository); err2 != nil && err == nil {
+	if err2 := client.RemoveImage(remote(configuration)); err2 != nil && err == nil {
 		err = err2
 	}
 
