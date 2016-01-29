@@ -17,6 +17,7 @@ type Install struct {
 	Command     string
 	Environment []string
 	Volumes     []string
+	Links       []string
 }
 
 // Compose contains compose runtime's configuration.

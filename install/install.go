@@ -34,12 +34,14 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 	output := configuration.Install.Output
 	image := configuration.Install.Image
 	command := configuration.Install.Command
+	links := configuration.Install.Links
 
 	option := docker.RunOptions{
 		Image:   image,
 		Command: command,
 		Env:     env,
 		Volumes: volumes,
+		Links:   links,
 	}
 
 	stream := docker.NewLogStream()

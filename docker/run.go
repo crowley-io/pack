@@ -26,6 +26,7 @@ type RunOptions struct {
 	Command string
 	Env     []string
 	Volumes []string
+	Links   []string
 }
 
 // See Docker interface
@@ -99,6 +100,7 @@ func createContainerOptions(option RunOptions) api.CreateContainerOptions {
 		HostConfig: &api.HostConfig{
 			NetworkMode: hostNetworkMode,
 			Binds:       option.Volumes,
+			Links:       option.Links,
 		},
 	}
 }
