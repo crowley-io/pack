@@ -2,6 +2,7 @@ package install
 
 import (
 	"fmt"
+	"os"
 	"path"
 	"testing"
 
@@ -233,4 +234,9 @@ func getConfiguration(path string, volumes []string) *configuration.Configuratio
 			Volumes: volumes,
 		},
 	}
+}
+
+func pwd() string {
+	p, _ := os.Getwd()
+	return p
 }

@@ -38,15 +38,6 @@ func TestHome(t *testing.T) {
 
 }
 
-func TestPwd(t *testing.T) {
-
-	p := pwd()
-
-	assert.NotEmpty(t, p)
-	assert.True(t, pathExist(p), "pwd path doesn't exist")
-
-}
-
 func TestGetEnv(t *testing.T) {
 
 	uid, gid := whoami()
