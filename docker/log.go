@@ -12,13 +12,14 @@ const (
 	rawJSONStream = true
 )
 
-// LogStream contains two io.Writer for respectively, stdout and stderr.
+// LogStream contains two io.Writer for respectively, stdout and stderr, and also a JSON Decoder for the Docker API.
 type LogStream struct {
 	Out     io.Writer
 	Err     io.Writer
 	Decoder io.WriteCloser
 }
 
+// Close will closes the JSON Decoder.
 func (l LogStream) Close() error {
 	return l.Decoder.Close()
 }
