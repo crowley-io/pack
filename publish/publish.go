@@ -9,7 +9,7 @@ import (
 )
 
 // Publish push the docker image into the docker registy.
-func Publish(client docker.Docker, configuration *configuration.Configuration) error {
+func Publish(client docker.Docker, stream docker.LogStream, configuration *configuration.Configuration) error {
 
 	if err := configuration.Validate(); err != nil {
 		return err
@@ -38,16 +38,11 @@ func Publish(client docker.Docker, configuration *configuration.Configuration) e
 		return err
 	}
 
-	stream := docker.NewLogStream()
 	err = client.Push(pushOpts, stream)
 
 	// Remove registry tag
 	if err2 := client.RemoveImage(reference.Remote()); err2 != nil && err == nil {
 		err = err2
-	}
-
-	if err3 := stream.Close(); err3 != nil && err == nil {
-		err = err3
 	}
 
 	return err
