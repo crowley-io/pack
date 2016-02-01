@@ -14,6 +14,7 @@ A Docker build system.
    * [Compose](#compose-1)
    * [Publish](#publish-1)
  * [Packer](#packer)
+ * [License](#license)
 
 ## Introduction
 
@@ -158,3 +159,7 @@ chown ${CROWLEY_PACK_USER}:${CROWLEY_PACK_GROUP} ${CROWLEY_PACK_OUTPUT}
 ```
 
 This should provide you a minimal framework on how to build your packer image.
+
+## License
+
+This is Free Software, released under the terms of the [`GPL v3`](LICENSE).
