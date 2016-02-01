@@ -21,4 +21,7 @@ clean:
 install: pack
 	install -o root -g root -m 0755 pack /usr/local/bin/crowley-pack
 
-.PHONY: clean
+artifacts:
+	gox -osarch="linux/amd64" -output="crowley-pack_{{.OS}}-{{.Arch}}"
+
+.PHONY: clean artifacts install test style lint pack

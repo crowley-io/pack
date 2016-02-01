@@ -1,4 +1,5 @@
 /pack
+/crowley-pack_*
 
 /examples/go-hello/go-hello
 /examples/node-hello/app.tar.gz

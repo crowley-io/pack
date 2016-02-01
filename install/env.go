@@ -53,12 +53,6 @@ func home() (h string) {
 	return
 }
 
-// Return user's working directory
-func pwd() string {
-	p, _ := os.Getwd()
-	return p
-}
-
 func expandEnv(list []string) []string {
 
 	var env []string

@@ -8,7 +8,7 @@ import (
 )
 
 // Compose create a new image.
-func Compose(client docker.Docker, configuration *configuration.Configuration) error {
+func Compose(client docker.Docker, stream docker.LogStream, configuration *configuration.Configuration) error {
 
 	if err := configuration.Validate(); err != nil {
 		return err
@@ -32,7 +32,6 @@ func Compose(client docker.Docker, configuration *configuration.Configuration) e
 		NoCache:   noCache,
 	}
 
-	stream := docker.NewLogStream()
 	err = client.Build(option, stream)
 
 	if newid := client.ImageID(name); newid != id {
@@ -40,10 +39,6 @@ func Compose(client docker.Docker, configuration *configuration.Configuration) e
 		if err2 := client.RemoveImage(id); err == nil {
 			err = err2
 		}
-	}
-
-	if err3 := stream.Close(); err3 != nil && err == nil {
-		err = err3
 	}
 
 	return err

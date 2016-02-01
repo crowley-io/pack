@@ -22,9 +22,11 @@ func TestCompose(t *testing.T) {
 		t.FailNow()
 	}
 
-	wireMock(d, o, nil)
+	ls := docker.NewLogStream()
 
-	err := Compose(d, c)
+	wireMock(d, ls, o, nil)
+
+	err := Compose(d, ls, c)
 
 	d.AssertExpectations(t)
 	assert.Nil(t, err)
@@ -35,8 +37,9 @@ func TestComposeWithConfigurationError(t *testing.T) {
 
 	c := &configuration.Configuration{}
 	d := &mocks.DockerMock{}
+	ls := docker.NewLogStream()
 
-	err := Compose(d, c)
+	err := Compose(d, ls, c)
 
 	d.AssertExpectations(t)
 	assert.NotNil(t, err)
@@ -55,9 +58,11 @@ func TestComposeOnError(t *testing.T) {
 		t.FailNow()
 	}
 
-	wireMock(d, o, e)
+	ls := docker.NewLogStream()
 
-	err := Compose(d, c)
+	wireMock(d, ls, o, e)
+
+	err := Compose(d, ls, c)
 
 	d.AssertExpectations(t)
 	assert.NotNil(t, err)
@@ -65,8 +70,8 @@ func TestComposeOnError(t *testing.T) {
 
 }
 
-func wireMock(m *mocks.DockerMock, o docker.BuildOptions, err error) {
-	m.On("Build", o, docker.NewLogStream()).Return(err)
+func wireMock(m *mocks.DockerMock, ls docker.LogStream, o docker.BuildOptions, err error) {
+	m.On("Build", o, ls).Return(err)
 	m.On("ImageID", o.Name).Return("26913aba19ca").Twice()
 }
 

@@ -16,10 +16,11 @@ func TestInstall(t *testing.T) {
 	c := &configuration.Configuration{}
 	setCnf(c, "../testing/app.bin")
 	o := dckOpts(t, c)
+	ls := docker.NewLogStream()
 
-	wireMock(d, o, 0, nil)
+	wireMock(d, ls, o, 0, nil)
 
-	err := Install(d, c)
+	err := Install(d, ls, c)
 
 	d.AssertExpectations(t)
 	assert.Nil(t, err)
@@ -32,10 +33,11 @@ func TestInstallOnError(t *testing.T) {
 	c := &configuration.Configuration{}
 	setCnf(c, "../testing/app.bin")
 	o := dckOpts(t, c)
+	ls := docker.NewLogStream()
 
-	wireMock(d, o, 255, nil)
+	wireMock(d, ls, o, 255, nil)
 
-	err := Install(d, c)
+	err := Install(d, ls, c)
 
 	d.AssertExpectations(t)
 	assert.NotNil(t, err)
@@ -49,10 +51,11 @@ func TestInstallWithDockerError(t *testing.T) {
 	e := errors.New("an error")
 	setCnf(c, "../testing/app.bin")
 	o := dckOpts(t, c)
+	ls := docker.NewLogStream()
 
-	wireMock(d, o, 0, e)
+	wireMock(d, ls, o, 0, e)
 
-	err := Install(d, c)
+	err := Install(d, ls, c)
 
 	d.AssertExpectations(t)
 	assert.NotNil(t, err)
@@ -65,8 +68,9 @@ func TestInstallWithConfigurationError(t *testing.T) {
 	d := &mocks.DockerMock{}
 	c := &configuration.Configuration{}
 	setCnf(c, "")
+	ls := docker.NewLogStream()
 
-	err := Install(d, c)
+	err := Install(d, ls, c)
 
 	d.AssertExpectations(t)
 	assert.NotNil(t, err)
@@ -77,8 +81,9 @@ func TestInstallWithConfigurationError(t *testing.T) {
 func TestInstallWithNilConfiguration(t *testing.T) {
 
 	d := &mocks.DockerMock{}
+	ls := docker.NewLogStream()
 
-	err := Install(d, nil)
+	err := Install(d, ls, nil)
 
 	d.AssertExpectations(t)
 	assert.NotNil(t, err)
@@ -92,10 +97,11 @@ func TestInstallWithNoOutput(t *testing.T) {
 	c := &configuration.Configuration{}
 	setCnf(c, "file.txt")
 	o := dckOpts(t, c)
+	ls := docker.NewLogStream()
 
-	wireMock(d, o, 0, nil)
+	wireMock(d, ls, o, 0, nil)
 
-	err := Install(d, c)
+	err := Install(d, ls, c)
 
 	d.AssertExpectations(t)
 	assert.NotNil(t, err)
@@ -107,17 +113,18 @@ func TestInstallDisabled(t *testing.T) {
 	d := &mocks.DockerMock{}
 	c := &configuration.Configuration{}
 	setCnf(c, "../testing/app.bin")
+	ls := docker.NewLogStream()
 	c.Install = configuration.Install{Disable: true}
 
-	err := Install(d, c)
+	err := Install(d, ls, c)
 
 	d.AssertExpectations(t)
 	assert.Nil(t, err)
 
 }
 
-func wireMock(m *mocks.DockerMock, o docker.RunOptions, status int, err error) {
-	m.On("Run", o, docker.NewLogStream()).Return(status, err)
+func wireMock(m *mocks.DockerMock, ls docker.LogStream, o docker.RunOptions, status int, err error) {
+	m.On("Run", o, ls).Return(status, err)
 }
 
 func dckOpts(t *testing.T, c *configuration.Configuration) docker.RunOptions {

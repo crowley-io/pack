@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	parser "github.com/crowley-io/docker-parser"
 	api "github.com/fsouza/go-dockerclient"
 )
 
@@ -25,12 +26,18 @@ type RunOptions struct {
 	Command string
 	Env     []string
 	Volumes []string
+	Links   []string
 }
 
 // See Docker interface
 func (d docker) Run(option RunOptions, stream LogStream) (int, error) {
 
-	if err := d.client.PullImage(pullImageOptions(option, stream), pullAuthConfiguration(option)); err != nil {
+	r, err := parser.Parse(option.Image)
+	if err != nil {
+		return 0, err
+	}
+
+	if err := d.client.PullImage(pullImageOptions(r.Remote(), stream), pullAuthConfiguration(option)); err != nil {
 		return 0, err
 	}
 
@@ -66,9 +73,13 @@ func (d docker) Run(option RunOptions, stream LogStream) (int, error) {
 
 }
 
-func pullImageOptions(option RunOptions, stream LogStream) api.PullImageOptions {
+func pullAuthConfiguration(option RunOptions) api.AuthConfiguration {
+	return getAuthWithImage(option.Image)
+}
+
+func pullImageOptions(remote string, stream LogStream) api.PullImageOptions {
 	return api.PullImageOptions{
-		Repository:    option.Image,
+		Repository:    remote,
 		OutputStream:  stream.Decoder,
 		RawJSONStream: rawJSONStream,
 	}
@@ -89,6 +100,7 @@ func createContainerOptions(option RunOptions) api.CreateContainerOptions {
 		HostConfig: &api.HostConfig{
 			NetworkMode: hostNetworkMode,
 			Binds:       option.Volumes,
+			Links:       option.Links,
 		},
 	}
 }
@@ -99,8 +111,4 @@ func removeContainerOptions(id string) api.RemoveContainerOptions {
 		RemoveVolumes: removeVolumes,
 		Force:         forceRemove,
 	}
-}
-
-func pullAuthConfiguration(option RunOptions) api.AuthConfiguration {
-	return getAuthWithImage(option.Image)
 }

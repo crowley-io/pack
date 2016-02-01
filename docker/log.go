@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/andrew-d/go-termutil"
 	api "github.com/fsouza/go-dockerclient"
 )
 
@@ -11,13 +12,14 @@ const (
 	rawJSONStream = true
 )
 
-// LogStream contains two io.Writer for respectively, stdout and stderr.
+// LogStream contains two io.Writer for respectively, stdout and stderr, and also a JSON Decoder for the Docker API.
 type LogStream struct {
 	Out     io.Writer
 	Err     io.Writer
 	Decoder io.WriteCloser
 }
 
+// Close will closes the JSON Decoder.
 func (l LogStream) Close() error {
 	return l.Decoder.Close()
 }
@@ -31,7 +33,7 @@ func (d docker) Logs(id string, stream LogStream) error {
 func NewLogStream() LogStream {
 	out := os.Stdout
 	err := os.Stderr
-	decoder := newStreamDecoderWrapper(out, err)
+	decoder := newStreamDecoderWrapper(out, err, termutil.Isatty(out.Fd()))
 	return LogStream{Out: out, Err: err, Decoder: decoder}
 }
 

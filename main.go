@@ -25,18 +25,24 @@ func exit(err error, exit int) {
 
 func run(dck docker.Docker, cnf *configuration.Configuration) error {
 
+	ls := docker.NewLogStream()
+
 	start("install")
-	if err := install.Install(dck, cnf); err != nil {
+	if err := install.Install(dck, ls, cnf); err != nil {
 		return err
 	}
 
 	start("compose")
-	if err := compose.Compose(dck, cnf); err != nil {
+	if err := compose.Compose(dck, ls, cnf); err != nil {
 		return err
 	}
 
 	start("publish")
-	if err := publish.Publish(dck, cnf); err != nil {
+	if err := publish.Publish(dck, ls, cnf); err != nil {
+		return err
+	}
+
+	if err := ls.Close(); err == nil {
 		return err
 	}
 
