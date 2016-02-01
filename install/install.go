@@ -9,7 +9,7 @@ import (
 )
 
 // Install run compile instructions with a Docker container.
-func Install(client docker.Docker, configuration *configuration.Configuration) error {
+func Install(client docker.Docker, stream docker.LogStream, configuration *configuration.Configuration) error {
 
 	if err := configuration.Validate(); err != nil {
 		return err
@@ -44,12 +44,7 @@ func Install(client docker.Docker, configuration *configuration.Configuration) e
 		Links:   links,
 	}
 
-	stream := docker.NewLogStream()
 	exit, err := client.Run(option, stream)
-
-	if err2 := stream.Close(); err2 != nil && err == nil {
-		err = err2
-	}
 
 	if err != nil {
 		return err
