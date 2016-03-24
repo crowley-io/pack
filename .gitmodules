@@ -1,0 +1,18 @@
+[submodule "vendor/github.com/jawher/mow.cli"]
+	path = vendor/github.com/jawher/mow.cli
+	url = https://github.com/jawher/mow.cli
+[submodule "vendor/github.com/crowley-io/docker-parser"]
+	path = vendor/github.com/crowley-io/docker-parser
+	url = https://github.com/crowley-io/docker-parser
+[submodule "vendor/github.com/andrew-d/go-termutil"]
+	path = vendor/github.com/andrew-d/go-termutil
+	url = https://github.com/andrew-d/go-termutil
+[submodule "vendor/gopkg.in/yaml.v2"]
+	path = vendor/gopkg.in/yaml.v2
+	url = https://gopkg.in/yaml.v2
+[submodule "vendor/github.com/fsouza/go-dockerclient"]
+	path = vendor/github.com/fsouza/go-dockerclient
+	url = https://github.com/fsouza/go-dockerclient
+[submodule "vendor/github.com/stretchr/testify"]
+	path = vendor/github.com/stretchr/testify
+	url = https://github.com/stretchr/testify
