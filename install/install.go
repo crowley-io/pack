@@ -19,11 +19,7 @@ func Install(client docker.Docker, stream docker.LogStream, configuration *confi
 		return nil
 	}
 
-	env, err := GetEnv(configuration)
-
-	if err != nil {
-		return err
-	}
+	env := GetEnv(configuration)
 
 	volumes, err := GetVolumes(configuration)
 

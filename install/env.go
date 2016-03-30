@@ -24,7 +24,7 @@ const (
 )
 
 // GetEnv return the required environment variables for the container.
-func GetEnv(configuration *configuration.Configuration) ([]string, error) {
+func GetEnv(configuration *configuration.Configuration) []string {
 
 	e := expandEnv(configuration.Install.Environment)
 	p := path.Clean(configuration.Install.Path)
@@ -33,7 +33,7 @@ func GetEnv(configuration *configuration.Configuration) ([]string, error) {
 	e = addUserEnv(e)
 	e = addPathEnv(e, p, path.Join(p, o))
 
-	return e, nil
+	return e
 }
 
 // Return user's uid and gid

@@ -60,11 +60,11 @@ func parseVolumePath(path string) (string, error) {
 		mode = p[2]
 	}
 
-	if err := relativePath("internal", internal); err != nil {
+	if err := isAbsolutePath("internal", internal); err != nil {
 		return "", err
 	}
 
-	if err := relativePath("external", external); err != nil && external != "" {
+	if err := isAbsolutePath("external", external); err != nil && external != "" {
 		return "", err
 	}
 
@@ -100,7 +100,7 @@ func formatVolumePath(external, internal, mode string) string {
 	return external + internal + mode
 }
 
-func relativePath(t, p string) error {
+func isAbsolutePath(t, p string) error {
 	if !path.IsAbs(p) {
 		return fmt.Errorf("%s path '%s' is not an absolute path", t, p)
 	}
