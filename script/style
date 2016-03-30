@@ -1,0 +1,21 @@
+#!/bin/bash
+
+COMMON_PATH=$(dirname $0)/common
+. $COMMON_PATH
+
+GOFMT="gofmt"
+GOFMT_OPTS="-w"
+
+STATUS_CODE=0
+for PACKAGE in ${PACKAGES}; do
+
+  ${GOFMT} ${GOFMT_OPTS} ${PACKAGE}
+  GOFMT_STATUS=$?
+
+  if [[ $GOFMT_STATUS -ne 0 ]]; then
+    STATUS_CODE=1
+  fi
+
+done
+
+exit $STATUS_CODE
