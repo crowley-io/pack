@@ -20,6 +20,7 @@ setup:
 	go get -u github.com/onsi/ginkgo
 	go get -u github.com/onsi/gomega
 	go get -u github.com/crowley-io/macchiato
+	gometalinter --install --update
 	git submodule update --init --recursive
 
 test:
