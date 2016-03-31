@@ -114,7 +114,7 @@ func (m *Mock) Push(option PushOptions, stream LogStream) error {
 func (m *Mock) ImageID(name string) string {
 	m.ImageIDCalled = true
 	m.ImageIDName = name
-	return m.ImageID(name)
+	return m.ImageIDHandler(name)
 }
 
 // RemoveImage is a mock function for Docker interface.
