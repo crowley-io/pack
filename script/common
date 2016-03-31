@@ -1,0 +1,13 @@
+#!/bin/bash
+
+function error() {
+  echo "$1" >&2
+}
+
+if [ -z "$1" ]; then
+  error "Please configure go package path"
+  exit 1
+fi
+
+PACKAGE_NAME=$(echo $1 | sed s'#/*$##')
+PACKAGES=$(go list ./... | grep -v /vendor/ | grep -v /examples/ | sed s#${PACKAGE_NAME}#.#)

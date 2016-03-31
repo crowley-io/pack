@@ -1,131 +1,144 @@
-package configuration
+package configuration_test
 
 import (
-	"testing"
+	//"fmt"
+	//"os"
 
-	"github.com/stretchr/testify/assert"
+	. "github.com/crowley-io/pack/configuration"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-func TestValidateEmptyConfiguration(t *testing.T) {
+var _ = Describe("Validator", func() {
+	Describe("validate configuration attributes", func() {
+
+		var (
+			c   *Configuration
+			err error
+		)
+
+		JustBeforeEach(func() {
+			err = c.Validate()
+		})
+		Context("when it has no flaw", func() {
+			Context("with a lambda configuration", func() {
+				BeforeEach(func() {
+					c = getDefaultConfiguration()
+				})
+				It("should succeed", func() {
+					Expect(err).To(Succeed())
+				})
+			})
+			Context("with install disabled", func() {
+				BeforeEach(func() {
+					c = getDefaultConfiguration()
+					c.Install.Disable = true
+					c.Install.Image = ""
+					c.Install.Output = ""
+					c.Install.Path = ""
+				})
+				It("should succeed", func() {
+					Expect(err).To(Succeed())
+				})
+				It("should be disabled", func() {
+					Expect(c.Install.Disable).To(BeTrue())
+				})
+				It("could have empty attributes for install", func() {
+					Expect(c.Install.Image).To(BeEmpty())
+					Expect(c.Install.Output).To(BeEmpty())
+					Expect(c.Install.Path).To(BeEmpty())
+				})
+			})
+		})
+		Context("when it has errors", func() {
+			Context("because it's empty", func() {
+				BeforeEach(func() {
+					c = New()
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+				})
+			})
+			Context("because it's nil", func() {
+				BeforeEach(func() {
+					c = nil
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+					Expect(err).To(Equal(ErrConfigurationEmpty))
+				})
+			})
+			Context("because no output is defined", func() {
+				BeforeEach(func() {
+					c = getDefaultConfiguration()
+					c.Install.Output = ""
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+					Expect(err).To(Equal(ErrOutputRequired))
+				})
+			})
+			Context("because no image is defined", func() {
+				BeforeEach(func() {
+					c = getDefaultConfiguration()
+					c.Install.Image = ""
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+					Expect(err).To(Equal(ErrImageRequired))
+				})
+			})
+			Context("because no path is defined", func() {
+				BeforeEach(func() {
+					c = getDefaultConfiguration()
+					c.Install.Path = ""
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+					Expect(err).To(Equal(ErrPathRequired))
+				})
+			})
+			Context("because no name is defined", func() {
+				BeforeEach(func() {
+					c = getDefaultConfiguration()
+					c.Compose.Name = ""
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+					Expect(err).To(Equal(ErrNameRequired))
+				})
+			})
+			Context("because no hostname is defined", func() {
+				BeforeEach(func() {
+					c = getDefaultConfiguration()
+					c.Publish.Hostname = ""
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+					Expect(err).To(Equal(ErrHostnameRequired))
+				})
+			})
+		})
+	})
+})
+
+func getDefaultConfiguration() *Configuration {
 
 	c := New()
 
-	if !assert.NotNil(t, c) {
-		t.FailNow()
+	c.Install = Install{
+		Image:  "debian",
+		Path:   "/root",
+		Output: "file",
 	}
 
-	err := c.Validate()
-
-	assert.NotNil(t, err)
-
-}
-
-func TestValidateNilConfiguration(t *testing.T) {
-
-	err := Validate(nil)
-
-	assert.NotNil(t, err)
-	assert.Equal(t, ErrConfigurationEmpty, err)
-
-}
-
-func TestValidateConfiguration(t *testing.T) {
-
-	c := newTestConf()
-
-	err := Validate(c)
-
-	assert.Nil(t, err)
-
-}
-
-func TestValidateConfigurationEmptyOutput(t *testing.T) {
-
-	c := newTestConf()
-	c.Install.Output = ""
-
-	err := Validate(c)
-
-	assert.NotNil(t, err)
-	assert.Equal(t, ErrOutputRequired, err)
-
-}
-
-func TestValidateConfigurationEmptyImage(t *testing.T) {
-
-	c := newTestConf()
-	c.Install.Image = ""
-
-	err := Validate(c)
-
-	assert.NotNil(t, err)
-	assert.Equal(t, ErrImageRequired, err)
-
-}
-
-func TestValidateConfigurationEmptyPath(t *testing.T) {
-
-	c := newTestConf()
-	c.Install.Path = ""
-
-	err := Validate(c)
-
-	assert.NotNil(t, err)
-	assert.Equal(t, ErrPathRequired, err)
-
-}
-
-func TestValidateConfigurationInstallDisabled(t *testing.T) {
-
-	c := newTestConf()
-	c.Install = Install{Disable: true}
-
-	err := Validate(c)
-
-	assert.Nil(t, err)
-
-}
-
-func TestValidateConfigurationEmptyName(t *testing.T) {
-
-	c := newTestConf()
-	c.Compose.Name = ""
-
-	err := Validate(c)
-
-	assert.NotNil(t, err)
-	assert.Equal(t, ErrNameRequired, err)
-
-}
-
-func TestValidateConfigurationEmptyHostname(t *testing.T) {
-
-	c := newTestConf()
-	c.Publish.Hostname = ""
-
-	err := Validate(c)
-
-	assert.NotNil(t, err)
-	assert.Equal(t, ErrHostnameRequired, err)
-
-}
-
-func newTestConf() *Configuration {
-
-	c := &Configuration{
-		Install: Install{
-			Image:  "debian",
-			Path:   "/root",
-			Output: "file",
-		},
-		Compose: Compose{
-			Name: "app",
-		},
-		Publish: Publish{
-			Hostname: "localhost:5000",
-		},
+	c.Compose = Compose{
+		Name: "app",
 	}
 
-	values(c)
+	c.Publish = Publish{
+		Hostname: "localhost:5000",
+	}
+
 	return c
 }

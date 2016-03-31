@@ -34,7 +34,7 @@ func Compose(client docker.Docker, stream docker.LogStream, configuration *confi
 
 	err = client.Build(option, stream)
 
-	if newid := client.ImageID(name); newid != id {
+	if newid := client.ImageID(name); newid != id && id != "" {
 		// Remove previous image since id doesn't match.
 		if err2 := client.RemoveImage(id); err == nil {
 			err = err2

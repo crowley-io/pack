@@ -1,72 +1,61 @@
-package install
+package install_test
 
 import (
 	"fmt"
-	"os"
-	"strconv"
-	"testing"
-
 	"github.com/crowley-io/pack/configuration"
-	"github.com/stretchr/testify/assert"
+	"os"
+
+	. "github.com/crowley-io/pack/install"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-func TestWhoami(t *testing.T) {
+var _ = Describe("Env", func() {
 
-	uid, gid := whoami()
+	var (
+		p   = "/media/app"
+		o   = "libshaped.so"
+		gp  = "GOPATH=$PATH:/usr/local/go"
+		sk  = "SECRET_KEY='3ztP7$Xqoef=VUdPa'"
+		db  = "DB_URI=mongodb://user:password@host:27017/db"
+		fb  = "FOO:BAR"
+		c   *configuration.Configuration
+		env []string
+	)
 
-	assert.NotEmpty(t, uid)
-	assert.NotEmpty(t, gid)
-
-	u, err := strconv.ParseUint(uid, 10, 64)
-
-	assert.Nil(t, err)
-	assert.True(t, u >= 0)
-
-	g, err := strconv.ParseUint(gid, 10, 64)
-
-	assert.Nil(t, err)
-	assert.True(t, g >= 0)
-
-}
-
-func TestHome(t *testing.T) {
-
-	h := home()
-
-	assert.NotEmpty(t, h)
-	assert.True(t, pathExist(h), "home path doesn't exist")
-
-}
-
-func TestGetEnv(t *testing.T) {
-
-	uid, gid := whoami()
-	path := os.Getenv("PATH")
-
-	o := "libshaped.so"
-	p := "/media/app"
-	u := "DB_URI=mongodb://user:password@host:27017/db"
-	s := "SECRET_KEY='3ztP7$Xqoef=VUdPa'"
-	f := "GOPATH=$PATH:/usr/local/go"
-
-	c := &configuration.Configuration{
-		Install: configuration.Install{
-			Path:        p,
-			Output:      o,
-			Environment: []string{u, f, s},
-		},
-	}
-
-	e, err := GetEnv(c)
-
-	assert.Nil(t, err)
-	assert.NotEmpty(t, e)
-	assert.Contains(t, e, u)
-	assert.Contains(t, e, fmt.Sprintf("CROWLEY_PACK_USER=%s", uid))
-	assert.Contains(t, e, fmt.Sprintf("CROWLEY_PACK_GROUP=%s", gid))
-	assert.Contains(t, e, fmt.Sprintf("CROWLEY_PACK_DIRECTORY=%s", p))
-	assert.Contains(t, e, fmt.Sprintf("CROWLEY_PACK_OUTPUT=%s/%s", p, o))
-	assert.Contains(t, e, fmt.Sprintf("GOPATH=%s:/usr/local/go", path))
-	assert.Contains(t, e, "SECRET_KEY=3ztP7$Xqoef=VUdPa")
-
-}
+	Describe("create a list of environment variable", func() {
+		BeforeEach(func() {
+			c = &configuration.Configuration{
+				Install: configuration.Install{
+					Path:        p,
+					Output:      o,
+					Environment: []string{sk, db, gp, fb},
+				},
+			}
+		})
+		JustBeforeEach(func() {
+			env = GetEnv(c)
+		})
+		It("should add user's UID and GID", func() {
+			Expect(env).To(ContainElement(fmt.Sprintf("CROWLEY_PACK_USER=%s", uid)))
+			Expect(env).To(ContainElement(fmt.Sprintf("CROWLEY_PACK_GROUP=%s", gid)))
+		})
+		It("should add directory and output path", func() {
+			Expect(env).To(ContainElement(fmt.Sprintf("CROWLEY_PACK_DIRECTORY=%s", p)))
+			Expect(env).To(ContainElement(fmt.Sprintf("CROWLEY_PACK_OUTPUT=%s/%s", p, o)))
+		})
+		It("should resolve variables", func() {
+			path := os.Getenv("PATH")
+			Expect(env).To(ContainElement(fmt.Sprintf("GOPATH=%s:/usr/local/go", path)))
+		})
+		It("should not resolve escaped variables", func() {
+			Expect(env).To(ContainElement("SECRET_KEY=3ztP7$Xqoef=VUdPa"))
+		})
+		It("should add a variable", func() {
+			Expect(env).To(ContainElement(db))
+		})
+		It("should not filter invalid variable", func() {
+			Expect(env).To(ContainElement(fb))
+		})
+	})
+})

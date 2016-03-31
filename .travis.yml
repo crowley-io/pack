@@ -1,0 +1,23 @@
+language: go
+
+go:
+  - 1.6
+  - tip
+
+sudo: false
+
+go_import_path: github.com/crowley-io/pack
+
+before_install:
+  - go get -u github.com/mattn/goveralls
+
+install:
+  - make setup
+
+script:
+  - make test
+  - make lint
+  - make coverage
+
+after_success:
+  - goveralls -coverprofile=coverage.out -service=travis-ci

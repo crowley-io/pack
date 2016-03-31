@@ -1,5 +1,12 @@
 # pack
 
+[![Documentation][godoc-img]][godoc-url]
+[![Build Status][travis-img]][travis-url]
+![License][license-img]
+[![Coverage Status][coverage-img]][coverage-url]
+[![Report Status][goreport-img]][goreport-url]
+
+
 A Docker build system.
 
 ## Summary
@@ -14,6 +21,7 @@ A Docker build system.
    * [Compose](#compose-1)
    * [Publish](#publish-1)
  * [Packer](#packer)
+ * [License](#license)
 
 ## Introduction
 
@@ -158,3 +166,18 @@ chown ${CROWLEY_PACK_USER}:${CROWLEY_PACK_GROUP} ${CROWLEY_PACK_OUTPUT}
 ```
 
 This should provide you a minimal framework on how to build your packer image.
+
+## License
+
+This is Free Software, released under the terms of the [`GPL v3`](LICENSE).
+
+
+[godoc-url]: https://godoc.org/github.com/crowley-io/pack
+[godoc-img]: https://godoc.org/github.com/crowley-io/pack?status.svg
+[travis-url]: https://travis-ci.org/crowley-io/pack
+[travis-img]: https://travis-ci.org/crowley-io/pack.svg?branch=master
+[license-img]: https://img.shields.io/badge/license-GPL%20v3-blue.svg
+[coverage-url]: https://coveralls.io/github/crowley-io/pack?branch=master
+[coverage-img]: https://coveralls.io/repos/github/crowley-io/pack/badge.svg?branch=master
+[goreport-url]: https://goreportcard.com/report/crowley-io/pack
+[goreport-img]: https://goreportcard.com/badge/crowley-io/pack

@@ -1,0 +1,40 @@
+#!/bin/bash
+
+COMMON_PATH=$(dirname $0)/common
+. $COMMON_PATH
+
+GOCOVER="go test"
+GOCOVER_OPTS="-covermode=count -coverprofile"
+
+GOCOVER_FILES=()
+GOCOVER_OUTPUT="coverage.out"
+
+GOCOVERHTML="go tool cover"
+GOCOVERHTML_OPTS="-html=${GOCOVER_OUTPUT} -o coverage.html"
+
+STATUS_CODE=0
+for PACKAGE in ${PACKAGES}; do
+
+  GOCOVER_FILE=${PACKAGE}/cover.out
+  GOCOVER_FILES+=("${GOCOVER_FILE}")
+
+  ${GOCOVER} ${GOCOVER_OPTS}=${GOCOVER_FILE} ${PACKAGE}
+  COVER_STATUS=$?
+
+  if [[ $COVER_STATUS -ne 0 ]]; then
+    STATUS_CODE=1
+  fi
+
+done
+
+echo "mode: count" > ${GOCOVER_OUTPUT}
+cat ${GOCOVER_FILES[@]} 2>/dev/null | grep -v "mode:" \
+  | sort -r | awk '{if($$1 != last) {print $$0;last=$$1}}' >> ${GOCOVER_OUTPUT}
+
+for GOCOVER_FILE in "${GOCOVER_FILES[@]}"
+do
+  rm ${GOCOVER_FILE} 2>/dev/null
+done
+
+${GOCOVERHTML} ${GOCOVERHTML_OPTS}
+exit $STATUS_CODE

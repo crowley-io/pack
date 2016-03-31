@@ -69,6 +69,8 @@ func main() {
 
 	}
 
-	app.Run(os.Args)
+	if err := app.Run(os.Args); err != nil {
+		exit(err, 1)
+	}
 
 }

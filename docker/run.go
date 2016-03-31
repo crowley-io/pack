@@ -37,7 +37,8 @@ func (d docker) Run(option RunOptions, stream LogStream) (int, error) {
 		return 0, err
 	}
 
-	if err := d.client.PullImage(pullImageOptions(r.Remote(), stream), pullAuthConfiguration(option)); err != nil {
+	err = d.client.PullImage(pullImageOptions(r.Remote(), stream), pullAuthConfiguration(option))
+	if err != nil {
 		return 0, err
 	}
 

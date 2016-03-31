@@ -1,0 +1,21 @@
+#!/bin/bash
+
+COMMON_PATH=$(dirname $0)/common
+. $COMMON_PATH
+
+GOTEST="go test"
+GOTEST_OPTS="-v"
+
+STATUS_CODE=0
+for PACKAGE in ${PACKAGES}; do
+
+  ${GOTEST} ${GOTEST_OPTS} ${PACKAGE}
+  GOTEST_STATUS=$?
+
+  if [[ $GOTEST_STATUS -ne 0 ]]; then
+    STATUS_CODE=1
+  fi
+
+done
+
+exit $STATUS_CODE

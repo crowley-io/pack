@@ -1,163 +1,180 @@
-package install
+package install_test
 
 import (
 	"errors"
-	"testing"
-
 	"github.com/crowley-io/pack/configuration"
 	"github.com/crowley-io/pack/docker"
-	mocks "github.com/crowley-io/pack/testing"
-	"github.com/stretchr/testify/assert"
+
+	. "github.com/crowley-io/pack/install"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-func TestInstall(t *testing.T) {
+var _ = Describe("Install", func() {
 
-	d := &mocks.DockerMock{}
-	c := &configuration.Configuration{}
-	setCnf(c, "../testing/app.bin")
-	o := dckOpts(t, c)
-	ls := docker.NewLogStream()
+	var (
+		c   *configuration.Configuration
+		ls  = docker.NewLogStream()
+		d   *docker.Mock
+		err error
+	)
 
-	wireMock(d, ls, o, 0, nil)
+	Describe("create an artefact from a docker container", func() {
+		JustBeforeEach(func() {
+			err = Install(d, ls, c)
+		})
+		Context("when the configuration is valid", func() {
+			BeforeEach(func() {
 
-	err := Install(d, ls, c)
+				c = getDefaultConfiguration()
+				d = docker.NewMock()
 
-	d.AssertExpectations(t)
-	assert.Nil(t, err)
+			})
+			It("should succeed", func() {
+				Expect(err).To(Succeed())
+			})
+			It("should run a container", func() {
+				Expect(d.RunCalled).To(BeTrue())
+				Expect(d.RunOptions.Command).To(Equal("make"))
+				Expect(d.RunOptions.Image).To(Equal("debian"))
+				Expect(d.RunOptions.Env).To(ConsistOf(
+					"CROWLEY_PACK_DIRECTORY=/root",
+					"CROWLEY_PACK_OUTPUT=/testdata/app.bin",
+					ContainSubstring("CROWLEY_PACK_USER="),
+					ContainSubstring("CROWLEY_PACK_GROUP="),
+				))
+				Expect(d.RunOptions.Links).To(BeEmpty())
+				Expect(d.RunOptions.Volumes).To(ConsistOf(
+					ContainSubstring("src/github.com/crowley-io/pack/install:/root:rw"),
+				))
+			})
+		})
+		Context("when install in configuration is disabled", func() {
+			BeforeEach(func() {
 
-}
+				c = getDefaultConfiguration()
+				c.Install.Disable = true
+				d = docker.NewMock()
 
-func TestInstallOnError(t *testing.T) {
+			})
+			It("should succeed", func() {
+				Expect(err).To(Succeed())
+			})
+			It("should not run a container", func() {
+				Expect(d.RunCalled).To(BeFalse())
+			})
+		})
+		Context("when the configuration is invalid", func() {
+			Context("because its empty", func() {
+				BeforeEach(func() {
 
-	d := &mocks.DockerMock{}
-	c := &configuration.Configuration{}
-	setCnf(c, "../testing/app.bin")
-	o := dckOpts(t, c)
-	ls := docker.NewLogStream()
+					c = &configuration.Configuration{}
+					d = docker.NewMock()
 
-	wireMock(d, ls, o, 255, nil)
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+				})
+				It("should not run a container", func() {
+					Expect(d.RunCalled).To(BeFalse())
+				})
+			})
+			Context("because volumes configuration has a syntax error", func() {
+				BeforeEach(func() {
 
-	err := Install(d, ls, c)
+					c = getDefaultConfiguration()
+					c.Install.Volumes = []string{"/home/user/.npm:/root/.npm:rw:3"}
+					d = docker.NewMock()
 
-	d.AssertExpectations(t)
-	assert.NotNil(t, err)
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+				})
+				It("should not run a container", func() {
+					Expect(d.RunCalled).To(BeFalse())
+				})
+			})
+		})
+		Context("when docker have issue(s)", func() {
+			Context("because we cannot run a container", func() {
 
-}
+				var (
+					e = errors.New("error: socket timeout")
+				)
 
-func TestInstallWithDockerError(t *testing.T) {
+				BeforeEach(func() {
 
-	d := &mocks.DockerMock{}
-	c := &configuration.Configuration{}
-	e := errors.New("an error")
-	setCnf(c, "../testing/app.bin")
-	o := dckOpts(t, c)
-	ls := docker.NewLogStream()
+					c = getDefaultConfiguration()
+					d = docker.NewMock()
+					d.RunHandler = func(option docker.RunOptions, stream docker.LogStream) (int, error) {
+						return 0, e
+					}
 
-	wireMock(d, ls, o, 0, e)
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+					Expect(err).To(Equal(e))
+				})
+				It("should try to run a container", func() {
+					Expect(d.RunCalled).To(BeTrue())
+				})
+			})
+			Context("because the container exit with an error", func() {
 
-	err := Install(d, ls, c)
+				var (
+					e = 255
+				)
 
-	d.AssertExpectations(t)
-	assert.NotNil(t, err)
-	assert.Equal(t, e, err)
+				BeforeEach(func() {
 
-}
+					c = getDefaultConfiguration()
+					d = docker.NewMock()
+					d.RunHandler = func(option docker.RunOptions, stream docker.LogStream) (int, error) {
+						return e, nil
+					}
 
-func TestInstallWithConfigurationError(t *testing.T) {
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("exit status %d", e))
+				})
+				It("should try to run a container", func() {
+					Expect(d.RunCalled).To(BeTrue())
+				})
+			})
+			Context("because the container doesn't create an output", func() {
+				BeforeEach(func() {
 
-	d := &mocks.DockerMock{}
-	c := &configuration.Configuration{}
-	setCnf(c, "")
-	ls := docker.NewLogStream()
+					c = getDefaultConfiguration()
+					c.Install.Output = "file.txt"
+					d = docker.NewMock()
 
-	err := Install(d, ls, c)
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+					Expect(err.Error()).To(ContainSubstring("file not found"))
+				})
+				It("should try to run a container", func() {
+					Expect(d.RunCalled).To(BeTrue())
+				})
+			})
+		})
+	})
+})
 
-	d.AssertExpectations(t)
-	assert.NotNil(t, err)
-	assert.Equal(t, configuration.ErrOutputRequired, err)
-
-}
-
-func TestInstallWithNilConfiguration(t *testing.T) {
-
-	d := &mocks.DockerMock{}
-	ls := docker.NewLogStream()
-
-	err := Install(d, ls, nil)
-
-	d.AssertExpectations(t)
-	assert.NotNil(t, err)
-	assert.Equal(t, configuration.ErrConfigurationEmpty, err)
-
-}
-
-func TestInstallWithNoOutput(t *testing.T) {
-
-	d := &mocks.DockerMock{}
-	c := &configuration.Configuration{}
-	setCnf(c, "file.txt")
-	o := dckOpts(t, c)
-	ls := docker.NewLogStream()
-
-	wireMock(d, ls, o, 0, nil)
-
-	err := Install(d, ls, c)
-
-	d.AssertExpectations(t)
-	assert.NotNil(t, err)
-
-}
-
-func TestInstallDisabled(t *testing.T) {
-
-	d := &mocks.DockerMock{}
-	c := &configuration.Configuration{}
-	setCnf(c, "../testing/app.bin")
-	ls := docker.NewLogStream()
-	c.Install = configuration.Install{Disable: true}
-
-	err := Install(d, ls, c)
-
-	d.AssertExpectations(t)
-	assert.Nil(t, err)
-
-}
-
-func wireMock(m *mocks.DockerMock, ls docker.LogStream, o docker.RunOptions, status int, err error) {
-	m.On("Run", o, ls).Return(status, err)
-}
-
-func dckOpts(t *testing.T, c *configuration.Configuration) docker.RunOptions {
-
-	e, err := GetEnv(c)
-	if !assert.Nil(t, err) {
-		t.FailNow()
-	}
-
-	v, err := GetVolumes(c)
-	if !assert.Nil(t, err) {
-		t.FailNow()
-	}
-
-	return docker.RunOptions{
-		Image:   "debian",
-		Command: "make",
-		Env:     e,
-		Volumes: v,
-	}
-}
-
-func setCnf(c *configuration.Configuration, output string) {
-	c.Install = configuration.Install{
-		Command: "make",
-		Path:    "/root",
-		Image:   "debian",
-		Output:  output,
-	}
-	c.Compose = configuration.Compose{
-		Name: "debian",
-	}
-	c.Publish = configuration.Publish{
-		Hostname: "localhost:5000",
+func getDefaultConfiguration() *configuration.Configuration {
+	return &configuration.Configuration{
+		Install: configuration.Install{
+			Command: "make",
+			Path:    "/root",
+			Image:   "debian",
+			Output:  "../testdata/app.bin",
+		},
+		Compose: configuration.Compose{
+			Name: "debian:8.2",
+		},
+		Publish: configuration.Publish{
+			Hostname: "localhost:5000",
+		},
 	}
 }

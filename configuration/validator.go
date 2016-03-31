@@ -15,7 +15,7 @@ var (
 	ErrNameRequired = errors.New("configuration(compose): name is required")
 	// ErrHostnameRequired is returned when registry hostname isn't defined in the configuration.
 	ErrHostnameRequired = errors.New("configuration(publish): hostname is required")
-	// ErrConfigurationEmpty is returned when Install is called with an empty configuration.
+	// ErrConfigurationEmpty is returned when the configuration is empty.
 	ErrConfigurationEmpty = errors.New("configuration is required")
 )
 

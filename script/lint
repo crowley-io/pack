@@ -1,0 +1,28 @@
+#!/bin/bash
+
+COMMON_PATH=$(dirname $0)/common
+. $COMMON_PATH
+
+GOMETALINTER_PATH="${GOPATH}/bin/gometalinter"
+GOMETALINTER_URL="https://github.com/alecthomas/gometalinter"
+GOMETALINTER_OPTS="--vendor --disable=gotype --enable=lll --enable=gofmt \
+	--dupl-threshold=80 --deadline=10s --line-length=120 --tests"
+
+if [[ ! -x $GOMETALINTER_PATH ]]; then
+  error "Please install gometalinter: ${GOMETALINTER_URL}"
+  exit 2
+fi
+
+STATUS_CODE=0
+for PACKAGE in ${PACKAGES}; do
+
+  ${GOMETALINTER_PATH} ${GOMETALINTER_OPTS} ${PACKAGE}
+  GOMETALINTER_STATUS=$?
+
+  if [[ $GOMETALINTER_STATUS -ne 0 ]]; then
+    STATUS_CODE=1
+  fi
+
+done
+
+exit ${STATUS_CODE}
