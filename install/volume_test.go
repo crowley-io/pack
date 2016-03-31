@@ -25,7 +25,7 @@ var _ = Describe("Volumes", func() {
 	Describe("with internal parser", func() {
 
 		var (
-			c   configuration.Configuration
+			c   *configuration.Configuration
 			e   []string
 			v   []string
 			err error
@@ -50,7 +50,7 @@ var _ = Describe("Volumes", func() {
 		}
 
 		JustBeforeEach(func() {
-			v, err = GetVolumes(&c)
+			v, err = GetVolumes(c)
 		})
 		Context("with an absolute external path", func() {
 			Context("without an explicit mode", func() {
@@ -173,13 +173,13 @@ var _ = Describe("Volumes", func() {
 	})
 })
 
-func getSimpleVolumeConfiguration(path string) (configuration.Configuration, []string) {
+func getSimpleVolumeConfiguration(path string) (*configuration.Configuration, []string) {
 	return getSimpleVolumeConfigurationWithResolve(path, "%s", path)
 }
 
-func getSimpleVolumeConfigurationWithResolve(path, format, value string) (configuration.Configuration, []string) {
+func getSimpleVolumeConfigurationWithResolve(path, format, value string) (*configuration.Configuration, []string) {
 
-	c := configuration.Configuration{
+	c := &configuration.Configuration{
 		Install: configuration.Install{
 			Path:    "/media",
 			Volumes: []string{path},
