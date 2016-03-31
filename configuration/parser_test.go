@@ -1,70 +1,85 @@
-package configuration
+package configuration_test
 
 import (
-	"testing"
+	"fmt"
+	"os"
 
-	"github.com/stretchr/testify/assert"
+	. "github.com/crowley-io/pack/configuration"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
-func TestParseWithPackerFile(t *testing.T) {
+var _ = Describe("Parser", func() {
+	Describe("parse a file and inflate a new configuration", func() {
 
-	c, err := Parse("../testing/packer.yml")
+		var (
+			p   string
+			c   *Configuration
+			err error
+		)
 
-	if !assert.Nil(t, err) {
-		t.Fatal("cannot parse file", err)
-	}
+		JustBeforeEach(func() {
+			c, err = Parse(p)
+		})
+		Context("when configuration is valid", func() {
 
-	if assert.NotNil(t, c) {
-		testConfArgs(t, c)
-	}
-}
+			AssertValidConfiguration := func() {
+				It("should succeed", func() {
+					Expect(err).To(Succeed())
+				})
+				It("should inflate a valid configuration", func() {
+					Expect(c.Install.Output).To(Equal("app.tar.gz"))
+					Expect(c.Install.Image).To(Equal("packer-go"))
+					Expect(c.Install.Path).To(Equal("/usr/local/go"))
+					Expect(c.Compose.Name).To(Equal("shen"))
+					Expect(c.Publish.Hostname).To(Equal("localhost:5000"))
+				})
+			}
 
-func TestParseWithJsonFile(t *testing.T) {
+			Context("with a yaml file", func() {
+				BeforeEach(func() {
+					p = getConfigurationFilepath("packer.yml")
+				})
+				AssertValidConfiguration()
+			})
+			Context("with a json file", func() {
+				BeforeEach(func() {
+					p = getConfigurationFilepath("packer.json")
+				})
+				AssertValidConfiguration()
+			})
+		})
+		Context("when configuration has an error", func() {
+			Context("with its syntax", func() {
+				BeforeEach(func() {
+					p = getConfigurationFilepath("packer-seq.yml")
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+				})
+			})
+			Context("with its attributes", func() {
+				BeforeEach(func() {
+					p = getConfigurationFilepath("packer-nooutput.yml")
+				})
+				It("should return an error", func() {
+					Expect(err).To(HaveOccurred())
+					Expect(err).To(Equal(ErrOutputRequired))
+				})
+			})
+		})
+		Context("file does not exist", func() {
+			BeforeEach(func() {
+				p = getConfigurationFilepath("nofile.yml")
+			})
+			It("should return an error", func() {
+				Expect(err).To(HaveOccurred())
+				Expect(os.IsNotExist(err)).To(BeTrue())
+			})
+		})
+	})
+})
 
-	c, err := Parse("../testing/packer.json")
-
-	if !assert.Nil(t, err) {
-		t.Fatal("cannot parse file", err)
-	}
-
-	if assert.NotNil(t, c) {
-		testConfArgs(t, c)
-	}
-}
-
-func TestParseWithNoFile(t *testing.T) {
-
-	c, err := Parse("../testing/nofile.yml")
-
-	assert.NotNil(t, err)
-	assert.Nil(t, c)
-}
-
-func TestParseWithSyntaxError(t *testing.T) {
-
-	c, err := Parse("../testing/packer-seq.yml")
-
-	assert.NotNil(t, err)
-	assert.Nil(t, c)
-}
-
-func TestParseWithConfigurationError(t *testing.T) {
-
-	c, err := Parse("../testing/packer-nooutput.yml")
-
-	if !assert.NotNil(t, err) {
-		t.Fatal("an error was expected")
-	}
-
-	assert.Nil(t, c)
-	assert.Equal(t, ErrOutputRequired, err)
-
-}
-
-func testConfArgs(t *testing.T, c *Configuration) {
-	assert.Equal(t, "app.tar.gz", c.Install.Output)
-	assert.Equal(t, "packer-go", c.Install.Image)
-	assert.Equal(t, "/usr/local/go", c.Install.Path)
-	assert.Equal(t, "shen", c.Compose.Name)
-	assert.Equal(t, "localhost:5000", c.Publish.Hostname)
+func getConfigurationFilepath(name string) string {
+	return fmt.Sprintf("../testdata/%s", name)
 }
