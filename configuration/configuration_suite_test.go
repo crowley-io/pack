@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestInstall(t *testing.T) {
+func TestConfiguration(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
 	macchiato.RunSpecs(t, "Configuration Suite")
 }

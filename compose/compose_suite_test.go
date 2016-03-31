@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestInstall(t *testing.T) {
+func TestCompose(t *testing.T) {
 	gomega.RegisterFailHandler(ginkgo.Fail)
 	macchiato.RunSpecs(t, "Compose Suite")
 }

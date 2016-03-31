@@ -31,7 +31,7 @@ var _ = Describe("Publish", func() {
 				err = Publish(d, ls, c)
 			})
 			It("should succeed", func() {
-				Expect(err).NotTo(HaveOccurred())
+				Expect(err).To(Succeed())
 			})
 			It("should push an image on the registry", func() {
 				Expect(d.TagCalled).To(BeTrue())

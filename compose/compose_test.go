@@ -2,7 +2,6 @@ package compose_test
 
 import (
 	"errors"
-	//"fmt"
 	"github.com/crowley-io/pack/configuration"
 	"github.com/crowley-io/pack/docker"
 

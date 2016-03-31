@@ -31,7 +31,7 @@ var _ = Describe("Volumes", func() {
 			err error
 		)
 
-		AssertFailedParse := func() {
+		AssertFailedParsing := func() {
 			It("should return an error", func() {
 				Expect(err).To(HaveOccurred())
 			})
@@ -42,7 +42,7 @@ var _ = Describe("Volumes", func() {
 
 		AssertSuccessfulParsing := func() {
 			It("should succeed", func() {
-				Expect(err).NotTo(HaveOccurred())
+				Expect(err).To(Succeed())
 			})
 			It("should match the expected list of volumes", func() {
 				Expect(v).To(ConsistOf(e))
@@ -75,7 +75,7 @@ var _ = Describe("Volumes", func() {
 				BeforeEach(func() {
 					c, e = getSimpleVolumeConfiguration("/root/.npm:ro")
 				})
-				AssertFailedParse()
+				AssertFailedParsing()
 				It("should parse mode as an internal path", func() {
 					Expect(err.Error()).To(Equal("internal path 'ro' is not an absolute path"))
 				})
@@ -84,13 +84,13 @@ var _ = Describe("Volumes", func() {
 				BeforeEach(func() {
 					c, e = getSimpleVolumeConfiguration("/home/user/.npm:/root/.npm:rw:3")
 				})
-				AssertFailedParse()
+				AssertFailedParsing()
 			})
 			Context("with an internal relative path", func() {
 				BeforeEach(func() {
 					c, e = getSimpleVolumeConfiguration("/home/user/.npm:./foo:rw")
 				})
-				AssertFailedParse()
+				AssertFailedParsing()
 			})
 		})
 		Context("with a relative external path", func() {
@@ -164,7 +164,7 @@ var _ = Describe("Volumes", func() {
 				c, e = getSimpleVolumeConfiguration("/media/foo/bar:/var/lib/foo/bar")
 				c.Install.Path = "~/foo:/usr/local/app"
 			})
-			AssertFailedParse()
+			AssertFailedParsing()
 			It("should mention that the format is incorrect", func() {
 				Expect(err.Error()).To(ContainSubstring("has incorrect format, should be external:internal[:mode]"))
 				Expect(v).To(BeEmpty())
