@@ -65,6 +65,7 @@ func parseVolumePath(path string) (string, error) {
 	}
 
 	if err := isAbsolutePath("external", external); err != nil && external != "" {
+		// Shouldn't happen but better safe than sorry...
 		return "", err
 	}
 
