@@ -30,6 +30,10 @@ lint:
 	@echo " -> $@"
 	@script/lint ${PACKAGE}
 
+coverage:
+	@echo " -> $@"
+	@script/coverage ${PACKAGE}
+
 ${NAME}:
 	go build -o ${NAME}
 
@@ -48,4 +52,4 @@ release: artifacts
 artifacts:
 	gox -osarch="linux/amd64" -output="crowley-${NAME}_{{.OS}}-{{.Arch}}"
 
-.PHONY: clean ${NAME} install artifacts test style lint release
+.PHONY: clean ${NAME} install artifacts test style lint coverage release
