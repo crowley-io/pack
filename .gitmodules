@@ -13,6 +13,3 @@
 [submodule "vendor/github.com/fsouza/go-dockerclient"]
 	path = vendor/github.com/fsouza/go-dockerclient
 	url = https://github.com/fsouza/go-dockerclient
-[submodule "vendor/github.com/stretchr/testify"]
-	path = vendor/github.com/stretchr/testify
-	url = https://github.com/stretchr/testify
