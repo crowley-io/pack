@@ -13,19 +13,19 @@ type Mock struct {
 	RemoveImageHandler func(name string) error
 	// Values
 	RunCalled         bool
-	RunOptions        RunOptions
 	PingCalled        bool
 	LogsCalled        bool
-	LogsID            string
 	BuildCalled       bool
-	BuildOptions      BuildOptions
 	TagCalled         bool
-	TagOptions        TagOptions
 	PushCalled        bool
-	PushOptions       PushOptions
 	ImageIDCalled     bool
-	ImageIDName       string
 	RemoveImageCalled bool
+	RunOptions        RunOptions
+	LogsID            string
+	BuildOptions      BuildOptions
+	TagOptions        TagOptions
+	PushOptions       PushOptions
+	ImageIDName       string
 	RemoveImageName   string
 }
 
