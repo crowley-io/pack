@@ -23,170 +23,163 @@ var _ = Describe("Volumes", func() {
 		})
 	})
 	Describe("with internal parser", func() {
-		It("should parse without explicit mode", func() {
 
-			c, e := getSimpleVolumeConfiguration("/home/user/.npm:/root/.npm")
-			v, err := GetVolumes(c)
+		var (
+			c   configuration.Configuration
+			e   []string
+			v   []string
+			err error
+		)
 
-			Expect(err).To(Succeed())
-			Expect(v).To(ConsistOf(e))
+		AssertFailedParse := func() {
+			It("should return an error", func() {
+				Expect(err).To(HaveOccurred())
+			})
+			It("should have an empty list of volumes", func() {
+				Expect(v).To(BeEmpty())
+			})
+		}
 
+		AssertSuccessfulParsing := func() {
+			It("should succeed", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+			It("should match the expected list of volumes", func() {
+				Expect(v).To(ConsistOf(e))
+			})
+		}
+
+		JustBeforeEach(func() {
+			v, err = GetVolumes(&c)
 		})
-		It("should parse with a given mode", func() {
-
-			c, e := getSimpleVolumeConfiguration("/home/user/.npm:/root/.npm:rw")
-			v, err := GetVolumes(c)
-
-			Expect(err).To(Succeed())
-			Expect(v).To(ConsistOf(e))
-
+		Context("with an absolute external path", func() {
+			Context("without an explicit mode", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfiguration("/home/user/.npm:/root/.npm")
+				})
+				AssertSuccessfulParsing()
+			})
+			Context("with an explicit mode", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfiguration("/home/user/.npm:/root/.npm:rw")
+				})
+				AssertSuccessfulParsing()
+			})
+			Context("without an external path", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfiguration("/root/.npm")
+				})
+				AssertSuccessfulParsing()
+			})
+			Context("without an external path and with a mode", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfiguration("/root/.npm:ro")
+				})
+				AssertFailedParse()
+				It("should parse mode as an internal path", func() {
+					Expect(err.Error()).To(Equal("internal path 'ro' is not an absolute path"))
+				})
+			})
+			Context("with a syntax error", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfiguration("/home/user/.npm:/root/.npm:rw:3")
+				})
+				AssertFailedParse()
+			})
+			Context("with an internal relative path", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfiguration("/home/user/.npm:./foo:rw")
+				})
+				AssertFailedParse()
+			})
 		})
-		It("should parse without an external path", func() {
-
-			c, e := getSimpleVolumeConfiguration("/root/.npm")
-			v, err := GetVolumes(c)
-
-			Expect(err).To(Succeed())
-			Expect(v).To(ConsistOf(e))
-
-		})
-		It("should return an error with a syntax error", func() {
-
-			c, _ := getSimpleVolumeConfiguration("/home/user/.npm:/root/.npm:rw:3")
-			v, err := GetVolumes(c)
-
-			Expect(err).To(HaveOccurred())
-			Expect(v).To(BeEmpty())
-
-		})
-		It("should return an error with an internal relative path", func() {
-
-			c, _ := getSimpleVolumeConfiguration("/home/user/.npm:./foo:rw")
-			v, err := GetVolumes(c)
-
-			Expect(err).To(HaveOccurred())
-			Expect(v).To(BeEmpty())
-
-		})
-		Context("with the resolver", func() {
-			It("should resolve home for an external relative path", func() {
-
-				c, e := getSimpleVolumeConfigurationWithResolve(
-					"~/.npm:/root/.npm",
-					"%s/.npm:/root/.npm",
-					home,
-				)
-				v, err := GetVolumes(c)
-
-				Expect(err).To(Succeed())
-				Expect(v).To(ConsistOf(e))
-
+		Context("with a relative external path", func() {
+			Context("with home to resolve", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfigurationWithResolve(
+						"~/.npm:/root/.npm", "%s/.npm:/root/.npm", home,
+					)
+				})
+				AssertSuccessfulParsing()
 			})
-			It("should resolve home for an external relative path with a trailing slash", func() {
-
-				c, e := getSimpleVolumeConfigurationWithResolve(
-					"~/:/root/",
-					"%s:/root",
-					home,
-				)
-				v, err := GetVolumes(c)
-
-				Expect(err).To(Succeed())
-				Expect(v).To(ConsistOf(e))
-
+			Context("with home (with a trailing slash) to resolve", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfigurationWithResolve(
+						"~/:/root/", "%s:/root", home,
+					)
+				})
+				AssertSuccessfulParsing()
 			})
-			It("should resolve a folder in the working directory", func() {
-
-				c, e := getSimpleVolumeConfigurationWithResolve(
-					"./bin/:/usr/local/bin/:ro",
-					"%s/bin:/usr/local/bin:ro",
-					pwd,
-				)
-				v, err := GetVolumes(c)
-
-				Expect(err).To(Succeed())
-				Expect(v).To(ConsistOf(e))
-
+			Context("with a folder in the working to resolve", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfigurationWithResolve(
+						"./bin/:/usr/local/bin/:ro", "%s/bin:/usr/local/bin:ro", pwd,
+					)
+				})
+				AssertSuccessfulParsing()
 			})
-			It("should resolve the working directory", func() {
-
-				c, e := getSimpleVolumeConfigurationWithResolve("./:/var/www",
-					"%s:/var/www", pwd)
-
-				v, err := GetVolumes(c)
-
-				Expect(err).To(Succeed())
-				Expect(v).To(ConsistOf(e))
-
+			Context("with the working directory to resolve", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfigurationWithResolve(
+						"./:/var/www", "%s:/var/www", pwd,
+					)
+				})
+				AssertSuccessfulParsing()
 			})
-			It("should resolve a folder in working directory without any root prefix", func() {
-
-				c, e := getSimpleVolumeConfigurationWithResolve("bin/app:/var/www:rw",
-					"%s/bin/app:/var/www:rw", pwd)
-
-				v, err := GetVolumes(c)
-
-				Expect(err).To(Succeed())
-				Expect(v).To(ConsistOf(e))
-
+			Context("with a folder in working directory (without any prefix path) to resolve", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfigurationWithResolve(
+						"bin/app:/var/www:rw", "%s/bin/app:/var/www:rw", pwd,
+					)
+				})
+				AssertSuccessfulParsing()
 			})
-			It("should resolve a folder with a tilde in working directory", func() {
-
-				c, e := getSimpleVolumeConfigurationWithResolve("~bin/app:/var/www:rw",
-					"%s/~bin/app:/var/www:rw", pwd)
-
-				v, err := GetVolumes(c)
-
-				Expect(err).To(Succeed())
-				Expect(v).To(ConsistOf(e))
-
+			Context("with a folder starting with a tilde in working directory", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfigurationWithResolve(
+						"~bin/app:/var/www:rw", "%s/~bin/app:/var/www:rw", pwd,
+					)
+				})
+				AssertSuccessfulParsing()
 			})
-			It("should resolve a complex relative path for a folder in working directory", func() {
-
-				c, e := getSimpleVolumeConfigurationWithResolve("../bin/../app:/var/",
-					"%s/app:/var", path.Dir(pwd))
-
-				v, err := GetVolumes(c)
-
-				Expect(err).To(Succeed())
-				Expect(v).To(ConsistOf(e))
-
+			Context("with a complex path in working directory", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfigurationWithResolve(
+						"../bin/../app:/var/", "%s/app:/var", path.Dir(pwd),
+					)
+				})
+				AssertSuccessfulParsing()
 			})
-			It("should resolve a multiple level parent directory", func() {
-
-				c, e := getSimpleVolumeConfigurationWithResolve("../../:/var/",
-					"%s:/var", path.Dir(path.Dir(pwd)))
-
-				v, err := GetVolumes(c)
-
-				Expect(err).To(Succeed())
-				Expect(v).To(ConsistOf(e))
-
+			Context("with a multiple level parent directory", func() {
+				BeforeEach(func() {
+					c, e = getSimpleVolumeConfigurationWithResolve(
+						"../../:/var/", "%s:/var", path.Dir(path.Dir(pwd)),
+					)
+				})
+				AssertSuccessfulParsing()
 			})
 		})
 		Context("with an invalid configuration", func() {
-			It("should return an error for invalid path", func() {
-
-				c, _ := getSimpleVolumeConfiguration("/media/foo/bar:/var/lib/foo/bar")
+			BeforeEach(func() {
+				c, e = getSimpleVolumeConfiguration("/media/foo/bar:/var/lib/foo/bar")
 				c.Install.Path = "~/foo:/usr/local/app"
-				v, err := GetVolumes(c)
-
-				Expect(err).To(HaveOccurred())
+			})
+			AssertFailedParse()
+			It("should mention that the format is incorrect", func() {
 				Expect(err.Error()).To(ContainSubstring("has incorrect format, should be external:internal[:mode]"))
 				Expect(v).To(BeEmpty())
-
 			})
 		})
 	})
 })
 
-func getSimpleVolumeConfiguration(path string) (*configuration.Configuration, []string) {
+func getSimpleVolumeConfiguration(path string) (configuration.Configuration, []string) {
 	return getSimpleVolumeConfigurationWithResolve(path, "%s", path)
 }
 
-func getSimpleVolumeConfigurationWithResolve(path, format, value string) (*configuration.Configuration, []string) {
+func getSimpleVolumeConfigurationWithResolve(path, format, value string) (configuration.Configuration, []string) {
 
-	c := &configuration.Configuration{
+	c := configuration.Configuration{
 		Install: configuration.Install{
 			Path:    "/media",
 			Volumes: []string{path},

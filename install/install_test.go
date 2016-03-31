@@ -20,15 +20,15 @@ var _ = Describe("Install", func() {
 	)
 
 	Describe("create an artefact from a docker container", func() {
+		JustBeforeEach(func() {
+			err = Install(d, ls, c)
+		})
 		Context("when the configuration is valid", func() {
 			BeforeEach(func() {
 
 				c = getDefaultConfiguration()
 				d = docker.NewMock()
 
-			})
-			JustBeforeEach(func() {
-				err = Install(d, ls, c)
 			})
 			It("should succeed", func() {
 				Expect(err).To(Succeed())
@@ -57,9 +57,6 @@ var _ = Describe("Install", func() {
 				d = docker.NewMock()
 
 			})
-			JustBeforeEach(func() {
-				err = Install(d, ls, c)
-			})
 			It("should succeed", func() {
 				Expect(err).To(Succeed())
 			})
@@ -75,9 +72,6 @@ var _ = Describe("Install", func() {
 					d = docker.NewMock()
 
 				})
-				JustBeforeEach(func() {
-					err = Install(d, ls, c)
-				})
 				It("should return an error", func() {
 					Expect(err).To(HaveOccurred())
 				})
@@ -92,9 +86,6 @@ var _ = Describe("Install", func() {
 					c.Install.Volumes = []string{"/home/user/.npm:/root/.npm:rw:3"}
 					d = docker.NewMock()
 
-				})
-				JustBeforeEach(func() {
-					err = Install(d, ls, c)
 				})
 				It("should return an error", func() {
 					Expect(err).To(HaveOccurred())
@@ -120,9 +111,6 @@ var _ = Describe("Install", func() {
 					}
 
 				})
-				JustBeforeEach(func() {
-					err = Install(d, ls, c)
-				})
 				It("should return an error", func() {
 					Expect(err).To(HaveOccurred())
 					Expect(err).To(Equal(e))
@@ -146,9 +134,6 @@ var _ = Describe("Install", func() {
 					}
 
 				})
-				JustBeforeEach(func() {
-					err = Install(d, ls, c)
-				})
 				It("should return an error", func() {
 					Expect(err).To(HaveOccurred())
 					Expect(err.Error()).To(ContainSubstring("exit status %d", e))
@@ -158,16 +143,12 @@ var _ = Describe("Install", func() {
 				})
 			})
 			Context("because the container doesn't create an output", func() {
-
 				BeforeEach(func() {
 
 					c = getDefaultConfiguration()
 					c.Install.Output = "file.txt"
 					d = docker.NewMock()
 
-				})
-				JustBeforeEach(func() {
-					err = Install(d, ls, c)
 				})
 				It("should return an error", func() {
 					Expect(err).To(HaveOccurred())
