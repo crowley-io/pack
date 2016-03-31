@@ -1,0 +1,17 @@
+language: go
+
+go:
+  - 1.6
+  - tip
+
+sudo: false
+
+go_import_path: github.com/crowley-io/pack
+
+install:
+  - make setup
+
+script:
+  - make test
+  - make lint
+  - make coverage
