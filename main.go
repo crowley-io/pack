@@ -9,11 +9,12 @@ import (
 	"github.com/crowley-io/pack/docker"
 	"github.com/crowley-io/pack/install"
 	"github.com/crowley-io/pack/publish"
+	"github.com/fatih/color"
 	cli "github.com/jawher/mow.cli"
 )
 
 func start(module string) {
-	fmt.Printf("\n [crowley-pack] -> %s\n\n", module)
+	color.New(color.Bold).PrintfFunc()("\n [crowley-pack] -> %s\n\n", module)
 }
 
 func exit(err error, exit int) {
