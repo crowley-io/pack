@@ -79,10 +79,11 @@ func pullAuthConfiguration(option RunOptions) api.AuthConfiguration {
 }
 
 func pullImageOptions(remote string, stream LogStream) api.PullImageOptions {
+	json, output := stream.OutputStream()
 	return api.PullImageOptions{
 		Repository:    remote,
-		OutputStream:  stream.Decoder,
-		RawJSONStream: rawJSONStream,
+		OutputStream:  output,
+		RawJSONStream: json,
 	}
 }
 
