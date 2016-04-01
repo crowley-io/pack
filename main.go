@@ -42,10 +42,6 @@ func run(dck docker.Docker, cnf *configuration.Configuration) error {
 		return err
 	}
 
-	if err := ls.Close(); err == nil {
-		return err
-	}
-
 	return nil
 }
 
