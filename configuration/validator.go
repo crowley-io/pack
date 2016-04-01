@@ -26,7 +26,7 @@ func Validate(c *Configuration) error {
 		return ErrConfigurationEmpty
 	}
 
-	if c.Install.Disable == false {
+	if !c.Install.Disable {
 
 		if c.Install.Output == "" {
 			return ErrOutputRequired
