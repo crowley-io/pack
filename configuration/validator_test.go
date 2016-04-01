@@ -1,9 +1,6 @@
 package configuration_test
 
 import (
-	//"fmt"
-	//"os"
-
 	. "github.com/crowley-io/pack/configuration"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
