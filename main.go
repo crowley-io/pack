@@ -9,17 +9,23 @@ import (
 	"github.com/crowley-io/pack/docker"
 	"github.com/crowley-io/pack/install"
 	"github.com/crowley-io/pack/publish"
+	"github.com/fatih/color"
 	cli "github.com/jawher/mow.cli"
 )
 
+var (
+	// Version export pack binary version
+	Version string
+)
+
 func start(module string) {
-	fmt.Printf("\n [crowley-pack] -> %s\n\n", module)
+	color.New(color.Bold).PrintfFunc()("\n [crowley-pack] -> %s\n\n", module)
 }
 
 func exit(err error, exit int) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		os.Exit(exit)
+		cli.Exit(exit)
 	}
 }
 
@@ -42,31 +48,39 @@ func run(dck docker.Docker, cnf *configuration.Configuration) error {
 		return err
 	}
 
-	if err := ls.Close(); err == nil {
-		return err
+	return nil
+}
+
+func handle(parse func() (*configuration.Configuration, error)) {
+
+	c, err := parse()
+	exit(err, 253)
+
+	d, err := docker.New(c)
+	exit(err, 254)
+
+	if err = run(d, c); err != nil {
+		exit(err, 255)
 	}
 
-	return nil
 }
 
 func main() {
 
 	app := cli.App("crowley-pack", "Docker build system.")
+	app.Version("v version", fmt.Sprintf("crowley-pack %s", Version))
+
+	app.Command("push", "Compose an image and publish on a registry", func(cmd *cli.Cmd) {
+		remote, nocache, nopull := getPushOptions(cmd)
+		cmd.Action = func() {
+			handle(createRemoteConfigurationParser(remote, nocache, nopull))
+		}
+	})
 
 	path := getPathOption(app)
 
 	app.Action = func() {
-
-		c, err := configuration.Parse(*path)
-		exit(err, 253)
-
-		d, err := docker.New(c)
-		exit(err, 254)
-
-		if err = run(d, c); err != nil {
-			exit(err, 255)
-		}
-
+		handle(createFileConfigurationParser(path))
 	}
 
 	if err := app.Run(os.Args); err != nil {

@@ -8,20 +8,16 @@ import (
 	api "github.com/fsouza/go-dockerclient"
 )
 
-const (
-	rawJSONStream = true
-)
-
 // LogStream contains two io.Writer for respectively, stdout and stderr, and also a JSON Decoder for the Docker API.
 type LogStream struct {
 	Out     io.Writer
 	Err     io.Writer
-	Decoder io.WriteCloser
+	Decoder io.Writer
 }
 
-// Close will closes the JSON Decoder.
-func (l LogStream) Close() error {
-	return l.Decoder.Close()
+// OutputStream return a stream output handler with its encoding.
+func (l LogStream) OutputStream() (json bool, stream io.Writer) {
+	return true, l.Decoder
 }
 
 // See Docker interface

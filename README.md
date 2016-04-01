@@ -35,7 +35,7 @@ Each module is run as a sequential processing. If a module fails, the build proc
 
 ### Install
 
-The **install** module export a file _(a binary or an archive, for example)_ using a Docker container. This container _(called a packer)_ will run a command in order to create the required file for the **compose** module _(and its Dockerfile)_.
+The **install** module export an artifact _(a binary or an archive, for example)_ using a Docker container. This container _(called a packer)_ will run a command in order to create the required file for the **compose** module _(and its Dockerfile)_.
 
 The packer image must contains your development dependencies to execute your project's build and follow a guideline _(see **Packer** paragraph)_, in contrast with the image created with _compose_ which should only contains your minimal runtime dependencies.
 

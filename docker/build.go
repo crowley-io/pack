@@ -27,7 +27,7 @@ func (d docker) Build(option BuildOptions, stream LogStream) error {
 }
 
 func buildImageOptions(option BuildOptions, stream LogStream) api.BuildImageOptions {
-
+	json, output := stream.OutputStream()
 	opts := api.BuildImageOptions{
 		Name:                option.Name,
 		NoCache:             option.NoCache,
@@ -35,9 +35,9 @@ func buildImageOptions(option BuildOptions, stream LogStream) api.BuildImageOpti
 		RmTmpContainer:      buildRm,
 		ForceRmTmpContainer: buildForceRm,
 		Pull:                option.Pull,
-		OutputStream:        stream.Decoder,
+		OutputStream:        output,
 		ContextDir:          option.Directory,
-		RawJSONStream:       rawJSONStream,
+		RawJSONStream:       json,
 		Memory:              buildMemory,
 		Memswap:             buildMemswap,
 	}
