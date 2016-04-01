@@ -16,6 +16,7 @@ func Install(client docker.Docker, stream docker.LogStream, configuration *confi
 	}
 
 	if configuration.Install.Disable {
+		fmt.Println("install module is disabled")
 		return nil
 	}
 
