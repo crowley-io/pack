@@ -12,6 +12,8 @@ ARTIFACTS = \
 UPLOAD_CMD = github-release upload --user ${GITHUB_USER} --repo ${GITHUB_REPO} --tag "v${VERSION}" \
 	--name ${FILE} --file ${FILE}
 
+LDFLAGS="-X main.Version=v${VERSION}"
+
 all: ${NAME}
 
 setup:
@@ -38,7 +40,7 @@ coverage:
 	@script/coverage ${PACKAGE}
 
 ${NAME}:
-	go build -o ${NAME}
+	go build -ldflags ${LDFLAGS} -o ${NAME}
 
 clean:
 	rm -rf ${NAME}
@@ -53,6 +55,6 @@ release: artifacts
 	$(foreach FILE,$(ARTIFACTS),$(UPLOAD_CMD);)
 
 artifacts:
-	gox -osarch="linux/amd64" -output="crowley-${NAME}_{{.OS}}-{{.Arch}}"
+	gox -osarch="linux/amd64" -ldflags ${LDFLAGS} -output="crowley-${NAME}_{{.OS}}-{{.Arch}}"
 
 .PHONY: clean ${NAME} install artifacts test style lint coverage release
