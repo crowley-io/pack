@@ -6,7 +6,7 @@ COMMON_PATH=$(dirname $0)/common
 GOMETALINTER_PATH="${GOPATH}/bin/gometalinter"
 GOMETALINTER_URL="https://github.com/alecthomas/gometalinter"
 GOMETALINTER_OPTS="--vendor --disable=gotype --enable=lll --enable=gofmt \
-	--dupl-threshold=80 --deadline=10s --line-length=120 --tests"
+	--dupl-threshold=80 --deadline=120s --line-length=120 --tests"
 
 if [[ ! -x $GOMETALINTER_PATH ]]; then
   error "Please install gometalinter: ${GOMETALINTER_URL}"
