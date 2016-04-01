@@ -13,3 +13,15 @@
 [submodule "vendor/github.com/fsouza/go-dockerclient"]
 	path = vendor/github.com/fsouza/go-dockerclient
 	url = https://github.com/fsouza/go-dockerclient
+[submodule "vendor/github.com/crowley-io/macchiato"]
+	path = vendor/github.com/crowley-io/macchiato
+	url = https://github.com/crowley-io/macchiato
+[submodule "vendor/github.com/fatih/color"]
+	path = vendor/github.com/fatih/color
+	url = https://github.com/fatih/color
+[submodule "vendor/github.com/onsi/ginkgo"]
+	path = vendor/github.com/onsi/ginkgo
+	url = https://github.com/onsi/ginkgo
+[submodule "vendor/github.com/onsi/gomega"]
+	path = vendor/github.com/onsi/gomega
+	url = https://github.com/onsi/gomega
