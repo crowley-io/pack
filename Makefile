@@ -17,6 +17,7 @@ all: ${NAME}
 setup:
 	go get -u github.com/mitchellh/gox
 	go get -u github.com/alecthomas/gometalinter
+	go get -u github.com/aktau/github-release
 	gometalinter --install --update
 	git submodule update --init --recursive
 
