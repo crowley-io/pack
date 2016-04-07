@@ -17,7 +17,6 @@ LDFLAGS="-X main.Version=v${VERSION}"
 all: ${NAME}
 
 setup:
-	go get -u github.com/mitchellh/gox
 	go get -u github.com/alecthomas/gometalinter
 	go get -u github.com/aktau/github-release
 	gometalinter --install --update
@@ -54,7 +53,9 @@ release: artifacts
 		--name ${VERSION} --pre-release
 	$(foreach FILE,$(ARTIFACTS),$(UPLOAD_CMD);)
 
-artifacts:
-	gox -osarch="linux/amd64" -ldflags ${LDFLAGS} -output="crowley-${NAME}_{{.OS}}-{{.Arch}}"
+artifacts_linux_amd64:
+	GOOS=linux GOARCH=amd64 go build -ldflags ${LDFLAGS} -o "crowley-${NAME}_linux-amd64"
+
+artifacts: artifacts_linux_amd64
 
 .PHONY: clean ${NAME} install artifacts test style lint coverage release
