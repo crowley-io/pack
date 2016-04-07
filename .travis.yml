@@ -21,3 +21,8 @@ script:
 
 after_success:
   - goveralls -coverprofile=coverage.out -service=travis-ci
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - go: tip
