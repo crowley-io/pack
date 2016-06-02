@@ -44,11 +44,8 @@ func run(dck docker.Docker, cnf *configuration.Configuration) error {
 	}
 
 	start("publish")
-	if err := publish.Publish(dck, ls, cnf); err != nil {
-		return err
-	}
+	return publish.Publish(dck, ls, cnf)
 
-	return nil
 }
 
 func handle(parse func() (*configuration.Configuration, error)) {
